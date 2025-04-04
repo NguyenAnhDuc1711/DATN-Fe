@@ -6,18 +6,63 @@ import { HeaderHeight } from "./Layout/index";
 import BannedPage from "./pages/BannedPage";
 import Socket from "./socket";
 import { useAppDispatch } from "./hooks/redux";
+import PageConstant from "./Breads-Shared/Constants/PageConstants";
+import { AppState } from "./store";
+import { Constants } from "./Breads-Shared/Constants";
+import PostConstants from "./Breads-Shared/Constants/PostConstants";
+import { getUserInfo } from "./store/UserSlice/asyncThunk";
+import LoginPopupScreen from "./components/LoginPopupScreen";
 
 const AuthPage: LazyExoticComponent<() => JSX.Element> = lazy(
   () => import("./pages/AuthPage")
 );
+// const CreatePostBtn: LazyExoticComponent<() => JSX.Element> = lazy(
+//   () => import("./components/CreatePostBtn")
+// );
+// const PostPopup: LazyExoticComponent<() => JSX.Element> = lazy(
+//   () => import("./components/PostPopup")
+// );
+// const NotificationCreatePost: LazyExoticComponent<() => JSX.Element> = lazy(
+//   () => import("./components/PostPopup/NotificationPost")
+// );
+// const SeeMedia: LazyExoticComponent<() => JSX.Element> = lazy(
+//   () => import("./components/SeeMedia")
+// );
 const Layout: LazyExoticComponent<() => JSX.Element> = lazy(
-  () => import("./Layout/index")
+  () => import("./Layout")
 );
+// const ActivityPage: LazyExoticComponent<() => JSX.Element> = lazy(
+//   () => import("./pages/ActivityPage")
+// );
+// const AdminPage: LazyExoticComponent<() => JSX.Element> = lazy(
+//   () => import("./pages/Admin")
+// );
+// const ChatPage: LazyExoticComponent<() => JSX.Element> = lazy(
+//   () => import("./pages/ChatPage")
+// );
 const ErrorPage: LazyExoticComponent<() => JSX.Element> = lazy(
   () => import("./pages/ErrorPage")
 );
 const HomePage: LazyExoticComponent<() => JSX.Element> = lazy(
   () => import("./pages/HomePage")
+);
+// const PostDetail: LazyExoticComponent<() => JSX.Element> = lazy(
+//   () => import("./pages/PostDetail")
+// );
+const ResetPWPage: LazyExoticComponent<() => JSX.Element> = lazy(
+  () => import("./pages/ResetPWPage")
+);
+// const SearchPage: LazyExoticComponent<() => JSX.Element> = lazy(
+//   () => import("./pages/SearchPage")
+// );
+// const SettingPage: LazyExoticComponent<() => JSX.Element> = lazy(
+//   () => import("./pages/SettingPage")
+// );
+const UpdateProfilePage: LazyExoticComponent<() => JSX.Element> = lazy(
+  () => import("./pages/UpdateProfilePage")
+);
+const UserPage: LazyExoticComponent<() => JSX.Element> = lazy(
+  () => import("./pages/UserPage")
 );
 
 const wrapSuspense = (cpn) => {
@@ -28,30 +73,24 @@ function App() {
   const dispatch = useAppDispatch();
   const location = useLocation();
   const userId = localStorage.getItem("userId");
-  const userInfo = {
-    _id: "123",
-    name: "Duc",
-    username: "AnhDuc",
-    email: "ducna17112003@gmail.com",
-  };
-  //   const userInfo = useSelector((state: AppState) => state.user.userInfo);
-  //   const { seeMediaInfo, currentPage, openLoginPopup } = useSelector(
-  //     (state: AppState) => state.util
-  //   );
-  //   const postAction = useSelector((state: AppState) => state.post.postAction);
-  //   const openReportPopup = useSelector(
-  //     (state: AppState) => state.report.openPopup
-  //   );
-  //   const { CREATE, EDIT, REPLY, REPOST } = PostConstants.ACTIONS;
-  //   const openPostPopup = [CREATE, EDIT, REPLY, REPOST].includes(postAction);
-  //   const isAdmin = userInfo?.role === Constants.USER_ROLE.ADMIN;
-  const isBanned = false; //userInfo?.status == Constants.USER_STATUS.BANNED;
+  const userInfo = useSelector((state: AppState) => state.user.userInfo);
+  const { seeMediaInfo, currentPage, openLoginPopup } = useSelector(
+    (state: AppState) => state.util
+  );
+  const postAction = useSelector((state: AppState) => state.post.postAction);
+  // const openReportPopup = useSelector(
+  //   (state: AppState) => state.report.openPopup
+  // );
+  const { CREATE, EDIT, REPLY, REPOST } = PostConstants.ACTIONS;
+  const openPostPopup = [CREATE, EDIT, REPLY, REPOST].includes(postAction);
+  const isAdmin = userInfo?.role === Constants.USER_ROLE.ADMIN;
+  const isBanned = userInfo?.status == Constants.USER_STATUS.BANNED;
 
-  //   useEffect(() => {
-  //     if (!!userId) {
-  //       handleGetUserInfo();
-  //     }
-  //   }, []);
+  useEffect(() => {
+    if (!!userId) {
+      handleGetUserInfo();
+    }
+  }, []);
 
   useEffect(() => {
     if (userInfo?._id) {
@@ -72,13 +111,13 @@ function App() {
     // );
   };
 
-  // const handleGetUserInfo = async () => {
-  //   try {
-  //     dispatch(getUserInfo({ userId, getCurrentUser: true }));
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-  // };
+  const handleGetUserInfo = async () => {
+    try {
+      dispatch(getUserInfo({ userId, getCurrentUser: true }));
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const HomeRoute = () => {
     // const { HOME, FOR_YOU, FOLLOWING, LIKED, SAVED } = PageConstant;
@@ -106,11 +145,33 @@ function App() {
       <Routes>
         {HomeRoute()}
         <Route
-          path={`/auth`}
+          path={`/${PageConstant.AUTH}`}
           element={!userId ? wrapSuspense(<AuthPage />) : <Navigate to="/" />}
         />
+        <Route
+          path="/update"
+          element={
+            !!userId ? (
+              wrapSuspense(<UpdateProfilePage />)
+            ) : (
+              <Navigate to={`/${PageConstant.AUTH}`} />
+            )
+          }
+        />
+        <Route
+          path="/reset-pw/:userId/:code"
+          element={wrapSuspense(<ResetPWPage />)}
+        />
+        <Route path="/users/:userId" element={wrapSuspense(<UserPage />)} />
+        {/* <Route
+          path="/posts/:postId"
+          element={<PostDetail key={location.pathname} />}
+        /> */}
         <Route path="*" element={wrapSuspense(<ErrorPage />)} />
       </Routes>
+      {/* {seeMediaInfo.open && wrapSuspense(<SeeMedia />)}
+      {openPostPopup && wrapSuspense(<PostPopup />)} */}
+      {openLoginPopup && wrapSuspense(<LoginPopupScreen />)}
     </div>
   );
 }
