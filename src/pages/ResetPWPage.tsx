@@ -79,7 +79,7 @@ const ResetPWPage = () => {
     const validationErrors: any = {};
     if (!passwordData.password) {
       validationErrors.password = t("passwordRequired2");
-    } else if (passwordData.password.length <= 6) {
+    } else if (passwordData.password.length < 6) {
       validationErrors.password = t("minPassWarning");
     }
     if (

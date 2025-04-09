@@ -18,11 +18,11 @@ import {
 } from "@chakra-ui/react";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-// import PageConstant from "../Breads-Shared/Constants/PageConstants";
+import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import { useAppDispatch } from "../hooks/redux";
 import useShowToast from "../hooks/useShowToast";
-// import { signUp } from "../store/UserSlice/asyncThunk";
-// import { changePage } from "../store/UtilSlice/asyncThunk";
+import { signUp } from "../store/UserSlice/asyncThunk";
+import { changePage } from "../store/UtilSlice/asyncThunk";
 
 const Signup = () => {
   const { t } = useTranslation();
@@ -57,7 +57,7 @@ const Signup = () => {
 
     if (!password) {
       validationErrors.password = t("passwordRequired2");
-    } else if (password.length <= 6) {
+    } else if (password.length < 6) {
       validationErrors.password = t("minPassWarning");
     }
     // else if (!/[A-Z]/.test(password)) {
@@ -78,32 +78,32 @@ const Signup = () => {
       return;
     }
 
-    // try {
-    //   const result = await dispatch(signUp(inputs));
+    try {
+      const result = await dispatch(signUp(inputs));
 
-    //   if (result?.meta?.requestStatus === "fulfilled") {
-    //     showToast("Success", t("signupsuccess"), "success");
-    //     dispatch(
-    //       changePage({
-    //         nextPage: PageConstant.LOGIN,
-    //         currentPage: PageConstant.SIGNUP,
-    //       })
-    //     );
-    //   } else {
-    //     const { errorType, error } = result.payload;
+      if (result?.meta?.requestStatus === "fulfilled") {
+        showToast("Success", t("signupsuccess"), "success");
+        dispatch(
+          changePage({
+            nextPage: PageConstant.LOGIN,
+            currentPage: PageConstant.SIGNUP,
+          })
+        );
+      } else {
+        const { errorType, error } = result.payload;
 
-    //     // Set specific errors based on errorType
-    //     if (errorType === "USERNAME_EXISTS") {
-    //       showToast("Error", t("usernameexsists"), "error");
-    //     }
-    //     if (errorType === "EMAIL_EXISTS") {
-    //       showToast("Error", t("emailexsists"), "error");
-    //     }
-    //   }
-    // } catch (error: any) {
-    //   console.error("Error in handleSignup:", error.message);
-    //   showToast("Error", error.message || t("signupfail"), "error");
-    // }
+        // Set specific errors based on errorType
+        if (errorType === "USERNAME_EXISTS") {
+          showToast("Error", t("usernameexsists"), "error");
+        }
+        if (errorType === "EMAIL_EXISTS") {
+          showToast("Error", t("emailexsists"), "error");
+        }
+      }
+    } catch (error: any) {
+      console.error("Error in handleSignup:", error.message);
+      showToast("Error", error.message || t("signupfail"), "error");
+    }
   };
 
   const handleKeyDown = (e, nextField?: any) => {
@@ -254,12 +254,12 @@ const Signup = () => {
                 <Link
                   color={"blue.400"}
                   onClick={() => {
-                    // dispatch(
-                    //   changePage({
-                    //     nextPage: PageConstant.LOGIN,
-                    //     currentPage: PageConstant.SIGNUP,
-                    //   })
-                    // );
+                    dispatch(
+                      changePage({
+                        nextPage: PageConstant.LOGIN,
+                        currentPage: PageConstant.SIGNUP,
+                      })
+                    );
                   }}
                 >
                   {t("SignIn")}

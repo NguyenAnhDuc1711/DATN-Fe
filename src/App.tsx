@@ -137,7 +137,22 @@ function App() {
   }
 
   return (
-    <div className="app">
+    <div
+      className="app"
+      style={{
+        marginTop: ![
+          PageConstant.SIGNUP,
+          PageConstant.LOGIN,
+          PageConstant.RESET_PW,
+          PageConstant.ADMIN.DEFAULT,
+          PageConstant.ADMIN.POSTS,
+          PageConstant.ADMIN.POSTS_VALIDATION,
+          PageConstant.ADMIN.USERS,
+        ].includes(currentPage)
+          ? HeaderHeight + 12 + "px"
+          : "",
+      }}
+    >
       {location.pathname !== "/error" &&
         userInfo?._id &&
         wrapSuspense(<Layout />)}

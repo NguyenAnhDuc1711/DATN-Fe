@@ -23,15 +23,15 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-// import { Route, USER_PATH, UTIL_PATH } from "../Breads-Shared/APIConfig";
-// import PageConstant from "../Breads-Shared/Constants/PageConstants";
-// import { encodedString } from "../Breads-Shared/util";
+import { Route, USER_PATH, UTIL_PATH } from "../Breads-Shared/APIConfig";
+import PageConstant from "../Breads-Shared/Constants/PageConstants";
+import { encodedString } from "../Breads-Shared/util";
 import { GET, POST } from "../config/API";
 import { useAppDispatch } from "../hooks/redux";
 import useShowToast from "../hooks/useShowToast";
-// import { IUser } from "../store/UserSlice";
-// import { login } from "../store/UserSlice/asyncThunk";
-// import { changePage } from "../store/UtilSlice/asyncThunk";
+import { IUser } from "../store/UserSlice";
+import { login } from "../store/UserSlice/asyncThunk";
+import { changePage } from "../store/UtilSlice/asyncThunk";
 import { genRandomCode } from "../util/index";
 
 type LoginInput = {
@@ -47,8 +47,8 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [countClick, setCountClick] = useState<number>(0);
   const [countClickGetFullAcc, setCountClickGetFullAcc] = useState<number>(0);
-  const [users, setUsers] = useState([]);
-  const [displayUsers, setDisplayUsers] = useState([]);
+  const [users, setUsers] = useState<IUser[]>([]);
+  const [displayUsers, setDisplayUsers] = useState<IUser[]>([]);
   const [openCodeBox, setOpenCodeBox] = useState<boolean>(false);
   const [inputs, setInputs] = useState<LoginInput>({
     email: "",
@@ -64,42 +64,25 @@ const Login = () => {
       handleLogin(true);
     }
     if (countClickGetFullAcc >= 5) {
-      //   handleGetAllAcc();
+      handleGetAllAcc();
     }
   }, [countClick, countClickGetFullAcc]);
 
   const handleGetAllAcc = async () => {
-    // try {
-    //   const data: IUser[] | undefined | null = await GET({
-    //     path: Route.USER + USER_PATH.USERS_TO_FOLLOW,
-    //     params: {
-    //       isTest: true,
-    //     },
-    //   });
-    //   if (data) {
-    //     setUsers(data);
-    //     setDisplayUsers(data);
-    //   }
-    // } catch (err) {
-    //   console.error("handleGetAllAcc: ", err);
-    // }
-  };
-
-  const validateAllFields = () => {
-    const { email, password } = inputs;
-    const newErrors: LoginInput = {
-      email: "",
-      password: "",
-    };
-
-    if (!email) {
-      newErrors.email = "Email là bắt buộc.";
+    try {
+      const data: IUser[] | undefined | null = await GET({
+        path: Route.USER + USER_PATH.USERS_TO_FOLLOW,
+        params: {
+          isTest: true,
+        },
+      });
+      if (data) {
+        setUsers(data);
+        setDisplayUsers(data);
+      }
+    } catch (err) {
+      console.error("handleGetAllAcc: ", err);
     }
-    if (!password) {
-      newErrors.password = "Mật khẩu là bắt buộc.";
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
   };
 
   const validateField = (fieldName: string) => {
@@ -130,13 +113,10 @@ const Login = () => {
   };
 
   const handleLogin = async (loginAsAdmin?: boolean) => {
-    if (!validateAllFields() && !loginAsAdmin) {
-      return;
-    }
     let payload = inputs;
     if (loginAsAdmin) {
       payload.loginAsAdmin = true;
-      //   dispatch(login(payload));
+      dispatch(login(payload));
       showToast(t("success"), "Đăng nhập bằng Admin thành công", "success");
       return;
     }
@@ -144,7 +124,8 @@ const Login = () => {
       return;
     }
     try {
-      //   await dispatch(login(payload)).unwrap();
+      console.log("payload: ", payload);
+      dispatch(login(payload));
       showToast(t("success"), t("loginsuccess"), "success");
     } catch (error: any) {
       showToast("Không thành công!", error?.error || t("checkagain"), "error");
@@ -152,64 +133,64 @@ const Login = () => {
   };
 
   const handleForgotPassword = async () => {
-    // try {
-    //   const email = inputs.email;
-    //   if (email.trim() && /\S+@\S+\.\S+/.test(email)) {
-    //     let isValidAccount = await POST({
-    //       path: Route.USER + USER_PATH.CHECK_VALID_USER,
-    //       payload: {
-    //         userEmail: email,
-    //       },
-    //     });
-    //     if (isValidAccount) {
-    //       showToast("", t("codesend"), "success");
-    //       console.log("code: ", codeSend.current);
-    //       const codeSendDecoded = encodedString(codeSend.current);
-    //       try {
-    //         const options = {
-    //           from: "mraducky@gmail.com",
-    //           to: email,
-    //           subject: "Reset password",
-    //           code: codeSendDecoded,
-    //           url: `${window.location.origin}/reset-pw/userId/${codeSendDecoded}`,
-    //         };
-    //         localStorage.setItem("encodedCode", codeSendDecoded);
-    //         setOpenCodeBox(true);
-    //         await POST({
-    //           path: Route.UTIL + UTIL_PATH.SEND_FORGOT_PW_MAIL,
-    //           payload: options,
-    //         });
-    //       } catch (err) {
-    //         console.error(err);
-    //       }
-    //     } else {
-    //       showToast("", t("Invalidaccount"), "error");
-    //     }
-    //   } else {
-    //     showToast("", t("Invalidemail"), "error");
-    //   }
-    // } catch (err) {
-    //   console.error(err);
-    //   showToast("Error", "Server error", "error");
-    // }
+    try {
+      const email = inputs.email;
+      if (email.trim() && /\S+@\S+\.\S+/.test(email)) {
+        let isValidAccount = await POST({
+          path: Route.USER + USER_PATH.CHECK_VALID_USER,
+          payload: {
+            userEmail: email,
+          },
+        });
+        if (isValidAccount) {
+          showToast("", t("codesend"), "success");
+          console.log("code: ", codeSend.current);
+          const codeSendDecoded = encodedString(codeSend.current);
+          try {
+            const options = {
+              from: "mraducky@gmail.com",
+              to: email,
+              subject: "Reset password",
+              code: codeSendDecoded,
+              url: `${window.location.origin}/reset-pw/userId/${codeSendDecoded}`,
+            };
+            localStorage.setItem("encodedCode", codeSendDecoded);
+            setOpenCodeBox(true);
+            await POST({
+              path: Route.UTIL + UTIL_PATH.SEND_FORGOT_PW_MAIL,
+              payload: options,
+            });
+          } catch (err) {
+            console.error(err);
+          }
+        } else {
+          showToast("", t("Invalidaccount"), "error");
+        }
+      } else {
+        showToast("", t("Invalidemail"), "error");
+      }
+    } catch (err) {
+      console.error(err);
+      showToast("Error", "Server error", "error");
+    }
   };
 
   const handleSubmitCode = async () => {
-    // try {
-    //   if (code === codeSend.current) {
-    //     const userId = await POST({
-    //       path: Route.USER + USER_PATH.GET_USER_ID_FROM_EMAIL,
-    //       payload: {
-    //         userEmail: inputs.email,
-    //       },
-    //     });
-    //     navigate(`/reset-pw/${userId}/${code}`);
-    //   } else {
-    //     showToast("", t("wrongcode"), "error");
-    //   }
-    // } catch (err) {
-    //   console.error(err);
-    // }
+    try {
+      if (code === codeSend.current) {
+        const userId = await POST({
+          path: Route.USER + USER_PATH.GET_USER_ID_FROM_EMAIL,
+          payload: {
+            userEmail: inputs.email,
+          },
+        });
+        navigate(`/reset-pw/${userId}/${code}`);
+      } else {
+        showToast("", t("wrongcode"), "error");
+      }
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const loginForTest = (userId) => {
@@ -235,8 +216,7 @@ const Login = () => {
           width={"320px"}
           onChange={(e) => {
             const searchValue = e.target.value;
-            const searchResult = users?.filter((user: any) => {
-              const username = user?.username;
+            const searchResult = users?.filter(({ username }) => {
               if (
                 username?.includes(searchValue) ||
                 searchValue?.includes(username)
@@ -256,7 +236,7 @@ const Login = () => {
           flexWrap={"wrap"}
           alignContent={"start"}
         >
-          {displayUsers?.map((user: any) => (
+          {displayUsers?.map((user) => (
             <Flex
               p={2}
               px={4}
@@ -367,14 +347,14 @@ const Login = () => {
                 {t("dontHaveAccount")}{" "}
                 <Link
                   color={"blue.400"}
-                  onClick={() => {
-                    // dispatch(
-                    //     changePage({
-                    //       nextPage: PageConstant.SIGNUP,
-                    //       currentPage: PageConstant.LOGIN,
-                    //     })
-                    //   )
-                  }}
+                  onClick={() =>
+                    dispatch(
+                      changePage({
+                        nextPage: PageConstant.SIGNUP,
+                        currentPage: PageConstant.LOGIN,
+                      })
+                    )
+                  }
                 >
                   {t("SignUp")}
                 </Link>

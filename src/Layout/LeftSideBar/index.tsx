@@ -1,5 +1,338 @@
+import { Box, Button, Flex, Image, Link, useColorMode } from "@chakra-ui/react";
+import { useMemo } from "react";
+import { BsFilePost } from "react-icons/bs";
+import { FaFacebookMessenger, FaRegHeart, FaUsers } from "react-icons/fa";
+import { FaRegUser } from "react-icons/fa6";
+import { FiSearch } from "react-icons/fi";
+import { GrHomeRounded, GrOverview } from "react-icons/gr";
+import { MdAdd } from "react-icons/md";
+import { useDispatch, useSelector } from "react-redux";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { LeftSideBarWidth } from "..";
+import { NOTIFICATION_PATH, Route } from "../../Breads-Shared/APIConfig";
+import { Constants } from "../../Breads-Shared/Constants";
+import PageConstant from "../../Breads-Shared/Constants/PageConstants";
+import PostConstants from "../../Breads-Shared/Constants/PostConstants";
+import useSocket from "../../hooks/useSocket";
+// import { updateHasNotification } from "../../store/NotificationSlice";
+import { updatePostAction } from "../../store/PostSlice";
+import { changeDisplayPageData } from "../../store/UtilSlice";
+import { changePage } from "../../store/UtilSlice/asyncThunk";
+import SidebarMenu from "./SidebarMenu";
+import { useAppDispatch, useAppSelector } from "../../hooks/redux";
+import { AppState } from "../../store";
+import { TbMessageReport } from "react-icons/tb";
+
 const LeftSideBar = () => {
-  return <>LeftSideBar</>;
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const { colorMode, toggleColorMode } = useColorMode();
+
+  const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
+  const isAdmin = userInfo?.role === Constants.USER_ROLE.ADMIN;
+  const { currentPage, displayPageData } = useAppSelector(
+    (state: AppState) => state.util
+  );
+  const hasNewNotification = false;
+  // useAppSelector(
+  //   (state: AppState) => state.notification.hasNewNotification
+  // );
+
+  const linkIcon = useMemo(
+    () => (
+      <Box position="relative" display="inline-block">
+        <FaRegHeart size={24} />
+        {hasNewNotification && (
+          <Box
+            position="absolute"
+            top="-2px"
+            right="-6px"
+            width="12px"
+            height="12px"
+            borderRadius="full"
+            bg="red"
+            border="2px solid"
+            borderColor={colorMode === "dark" ? "gray.800" : "white"}
+          />
+        )}
+      </Box>
+    ),
+    [hasNewNotification]
+  );
+
+  const messIcon = useMemo(
+    () => (
+      <Box position="relative" display="inline-block">
+        <FaFacebookMessenger size={24} />
+        {userInfo.hasNewMsg && (
+          <Box
+            position="absolute"
+            top="-2px"
+            right="-6px"
+            width="12px"
+            height="12px"
+            borderRadius="full"
+            bg="red"
+            border="2px solid"
+            borderColor={colorMode === "dark" ? "gray.800" : "white"}
+          />
+        )}
+      </Box>
+    ),
+    [userInfo.hasNewMsg]
+  );
+
+  useSocket((socket) => {
+    socket.on(Route.NOTIFICATION + NOTIFICATION_PATH.GET_NEW, (payload) => {
+      // dispatch(updateHasNotification(true));
+    });
+  }, []);
+
+  const getButtonColor = (isActive, colorMode) => {
+    if (isActive) {
+      return colorMode === "dark" ? "#f3f5f7" : "#000000";
+    }
+    return colorMode === "dark" ? "#4d4d4d" : "#a0a0a0";
+  };
+
+  const getHoverColor = (colorMode) => {
+    return colorMode === "dark" ? "#171717" : "#f0f0f0";
+  };
+
+  const getItemPropByPage = (page, queryInParams = "") => {
+    const linkTo = "/" + page + (queryInParams ?? "");
+    return {
+      linkTo: linkTo,
+      onClick: () => {
+        if (currentPage !== page) {
+          dispatch(
+            changePage({
+              currentPage,
+              nextPage: page,
+            })
+          );
+        }
+        navigate(linkTo);
+      },
+      color: getButtonColor(currentPage === page, colorMode),
+    };
+  };
+
+  const listItems: any = isAdmin
+    ? [
+        {
+          icon: <GrOverview size={24} />,
+          ...getItemPropByPage(PageConstant.ADMIN.DEFAULT),
+        },
+        {
+          icon: <BsFilePost size={24} />,
+          ...getItemPropByPage(PageConstant.ADMIN.POSTS),
+        },
+        {
+          icon: <FaUsers size={24} />,
+          ...getItemPropByPage(PageConstant.ADMIN.USERS),
+        },
+        {
+          icon: <TbMessageReport size={24} />,
+          ...getItemPropByPage(PageConstant.ADMIN.REPORT),
+        },
+      ]
+    : [
+        {
+          icon: <GrHomeRounded size={24} />,
+          ...getItemPropByPage(PageConstant.HOME),
+          onClick: () => {
+            getItemPropByPage(PageConstant.HOME).onClick();
+            if (displayPageData !== PageConstant.FOR_YOU) {
+              dispatch(changeDisplayPageData(PageConstant.FOR_YOU));
+            }
+          },
+        },
+        {
+          icon: <FiSearch size={24} />,
+          ...getItemPropByPage(PageConstant.SEARCH),
+        },
+        {
+          icon: linkIcon,
+          ...getItemPropByPage(PageConstant.ACTIVITY),
+          onClick: () => {
+            getItemPropByPage(PageConstant.ACTIVITY).onClick();
+            // dispatch(updateHasNotification(false));
+          },
+        },
+        {
+          icon: <MdAdd size={24} />,
+          onClick: () => {
+            dispatch(updatePostAction(PostConstants.ACTIONS.CREATE));
+          },
+        },
+        {
+          icon: <FaRegUser size={24} />,
+          ...getItemPropByPage(PageConstant.USER, `/${userInfo._id}`),
+        },
+        {
+          icon: messIcon,
+          ...getItemPropByPage(PageConstant.CHAT),
+        },
+      ];
+
+  return (
+    <Flex
+      direction={["column", "row"]}
+      width={[`${LeftSideBarWidth}px`, "100%"]}
+    >
+      <Box
+        height={["auto", "auto", "100vh"]}
+        color="white"
+        p={1}
+        position="fixed"
+        top={0}
+        left={0}
+        zIndex={1000}
+        display={["none", "none", "block"]}
+      >
+        <Flex
+          alignItems={"center"}
+          direction="column"
+          justifyContent="space-between"
+          height="100%"
+          color={colorMode === "dark" ? "white" : "black"}
+          position="relative"
+        >
+          <Link as={RouterLink} to={"/"}>
+            <Box m={5}>
+              <Image
+                cursor={"pointer"}
+                alt="logo"
+                w={9}
+                src={
+                  colorMode === "dark"
+                    ? "/bread-logo-dark.svg"
+                    : "/bread-logo-light.svg"
+                }
+                onClick={() => {
+                  if (currentPage !== PageConstant.HOME) {
+                    dispatch(
+                      changePage({ currentPage, nextPage: PageConstant.HOME })
+                    );
+                    if (displayPageData !== PageConstant.FOR_YOU) {
+                      dispatch(changeDisplayPageData(PageConstant.FOR_YOU));
+                    }
+                  }
+                  navigate("/");
+                }}
+              />
+            </Box>
+          </Link>
+          <Flex direction={"column"}>
+            {listItems.map((item, index) => (
+              <Box my={2} key={`side-bar-item-${index}`}>
+                <Button
+                  bg="transparent"
+                  _hover={{
+                    bg: colorMode === "dark" ? "#171717" : "#f0f0f0",
+                  }}
+                  color={colorMode === "dark" ? "#4d4d4d" : "#a0a0a0"}
+                  py={2}
+                  px={4}
+                  borderRadius="md"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (item.linkTo) {
+                      e.preventDefault();
+                    }
+                    item.onClick && item.onClick();
+                  }}
+                >
+                  {item?.linkTo ? (
+                    <Link
+                      as={RouterLink}
+                      to={item.linkTo}
+                      borderRadius="md"
+                      width={"100%"}
+                      height={"100%"}
+                      _hover={{ textDecoration: "none" }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        item.onClick && item.onClick();
+                      }}
+                      color={item.color}
+                    >
+                      {item.icon}
+                    </Link>
+                  ) : (
+                    <>{item.icon}</>
+                  )}
+                </Button>
+              </Box>
+            ))}
+          </Flex>
+          <Flex marginBottom={"10px"}>
+            <SidebarMenu />
+          </Flex>
+        </Flex>
+      </Box>
+
+      {/* leftsidebar với mobile */}
+      <Box
+        display={["block", "block", "none"]}
+        position="fixed"
+        bottom={0}
+        width="100%"
+        bg={colorMode === "dark" ? "#0a0a0a" : "#ffffff"}
+        zIndex={1000}
+        py={2}
+      >
+        <Flex
+          justifyContent="space-evenly"
+          alignItems="center"
+          direction="row"
+          width="100%"
+        >
+          {listItems
+            .filter(({ linkTo }) => {
+              return ![PageConstant.ACTIVITY, PageConstant.CHAT].includes(
+                linkTo?.slice(1, linkTo.length)
+              );
+            })
+            .map((item, index) => (
+              <Box key={`side-bar-item-${index}`}>
+                <Button
+                  p={0}
+                  bg="transparent"
+                  _hover={{
+                    bg: colorMode === "dark" ? "#171717" : "#f0f0f0",
+                  }}
+                  color={item.color}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (item.linkTo) {
+                      e.preventDefault();
+                      item.onClick && item.onClick();
+                    } else {
+                      item.onClick && item.onClick();
+                    }
+                  }}
+                >
+                  {item?.linkTo ? (
+                    <Link
+                      as={RouterLink}
+                      to={item.linkTo}
+                      _hover={{ textDecoration: "none" }}
+                    >
+                      {item.icon}
+                    </Link>
+                  ) : (
+                    <>{item.icon}</>
+                  )}
+                </Button>
+              </Box>
+            ))}
+          <SidebarMenu />
+        </Flex>
+      </Box>
+    </Flex>
+  );
 };
 
 export default LeftSideBar;
