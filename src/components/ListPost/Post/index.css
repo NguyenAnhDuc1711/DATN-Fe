@@ -1,0 +1,7 @@
+.post-container {
+  .btn-more-action {
+    position: relative;
+    width: fit-content;
+    height: fit-content;
+  }
+}

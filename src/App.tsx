@@ -16,18 +16,18 @@ import LoginPopupScreen from "./components/LoginPopupScreen";
 const AuthPage: LazyExoticComponent<() => JSX.Element> = lazy(
   () => import("./pages/AuthPage")
 );
-// const CreatePostBtn: LazyExoticComponent<() => JSX.Element> = lazy(
-//   () => import("./components/CreatePostBtn")
-// );
-// const PostPopup: LazyExoticComponent<() => JSX.Element> = lazy(
-//   () => import("./components/PostPopup")
-// );
+const CreatePostBtn: LazyExoticComponent<() => JSX.Element> = lazy(
+  () => import("./components/CreatePostBtn")
+);
+const PostPopup: LazyExoticComponent<() => JSX.Element> = lazy(
+  () => import("./components/PostPopup")
+);
 // const NotificationCreatePost: LazyExoticComponent<() => JSX.Element> = lazy(
 //   () => import("./components/PostPopup/NotificationPost")
 // );
-// const SeeMedia: LazyExoticComponent<() => JSX.Element> = lazy(
-//   () => import("./components/SeeMedia")
-// );
+const SeeMedia: LazyExoticComponent<() => JSX.Element> = lazy(
+  () => import("./components/SeeMedia")
+);
 const Layout: LazyExoticComponent<() => JSX.Element> = lazy(
   () => import("./Layout")
 );
@@ -46,9 +46,9 @@ const ErrorPage: LazyExoticComponent<() => JSX.Element> = lazy(
 const HomePage: LazyExoticComponent<() => JSX.Element> = lazy(
   () => import("./pages/HomePage")
 );
-// const PostDetail: LazyExoticComponent<() => JSX.Element> = lazy(
-//   () => import("./pages/PostDetail")
-// );
+const PostDetail: LazyExoticComponent<() => JSX.Element> = lazy(
+  () => import("./pages/PostDetail")
+);
 const ResetPWPage: LazyExoticComponent<() => JSX.Element> = lazy(
   () => import("./pages/ResetPWPage")
 );
@@ -120,13 +120,17 @@ function App() {
   };
 
   const HomeRoute = () => {
-    // const { HOME, FOR_YOU, FOLLOWING, LIKED, SAVED } = PageConstant;
-    return [""].map((page) => (
+    const { HOME, FOR_YOU, FOLLOWING, LIKED, SAVED } = PageConstant;
+    return ["", HOME, FOR_YOU, FOLLOWING, LIKED, SAVED].map((page) => (
       <Route
         key={`route-${page}`}
         path={`/${page}`}
         element={
-          !!userId ? wrapSuspense(<HomePage />) : <Navigate to={`/auth`} />
+          !!userId ? (
+            wrapSuspense(<HomePage />)
+          ) : (
+            <Navigate to={`/${PageConstant.AUTH}`} />
+          )
         }
       />
     ));
@@ -153,6 +157,18 @@ function App() {
           : "",
       }}
     >
+      {!seeMediaInfo.open &&
+        location.pathname !== "/error" &&
+        userInfo?._id &&
+        wrapSuspense(<Layout />)}
+      <Container maxW="620px">
+        {!!userId &&
+          !seeMediaInfo.open &&
+          location.pathname !== "/error" &&
+          !location.pathname?.includes("chat") &&
+          !isAdmin &&
+          wrapSuspense(<CreatePostBtn />)}
+      </Container>
       {location.pathname !== "/error" &&
         userInfo?._id &&
         wrapSuspense(<Layout />)}
@@ -184,8 +200,8 @@ function App() {
         /> */}
         <Route path="*" element={wrapSuspense(<ErrorPage />)} />
       </Routes>
-      {/* {seeMediaInfo.open && wrapSuspense(<SeeMedia />)}
-      {openPostPopup && wrapSuspense(<PostPopup />)} */}
+      {seeMediaInfo.open && wrapSuspense(<SeeMedia />)}
+      {openPostPopup && wrapSuspense(<PostPopup />)}
       {openLoginPopup && wrapSuspense(<LoginPopupScreen />)}
     </div>
   );

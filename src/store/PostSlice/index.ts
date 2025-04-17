@@ -45,7 +45,7 @@ export interface IUserShortInfo {
 export interface IPost {
   _id?: string;
   content: string;
-  media: any[];
+  media: any; // Media[];
   survey: ISurveyOption[];
   usersTag?: any;
   files: any;

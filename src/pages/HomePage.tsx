@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { Constants } from "../Breads-Shared/Constants";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
-// import CreatePostBar from "../components/CreatePostBar";
-// import ListPost from "../components/ListPost";
+import CreatePostBar from "../components/CreatePostBar";
+import ListPost from "../components/ListPost";
 import ContainerLayout from "../components/MainBoxLayout";
 import { useAppDispatch, useAppSelector } from "../hooks/redux";
 import { AppState } from "../store";
@@ -71,14 +71,11 @@ const HomePage = () => {
   return (
     <ContainerLayout>
       <>
-        {
-          displayPageData === FOR_YOU ||
-            window.location.pathname
-              ?.slice(1, window.location.pathname.length)
-              ?.toLowerCase() === PageConstant.HOME
-          // && <CreatePostBar />
-        }
-        {/* <ListPost /> */}
+        {(displayPageData === FOR_YOU ||
+          window.location.pathname
+            ?.slice(1, window.location.pathname.length)
+            ?.toLowerCase() === PageConstant.HOME) && <CreatePostBar />}
+        <ListPost />
       </>
     </ContainerLayout>
   );
