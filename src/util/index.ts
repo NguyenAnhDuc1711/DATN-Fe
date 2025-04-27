@@ -548,17 +548,17 @@ export const getAnalyticsInfoFromBrowser = async () => {
 
 export const addEvent = async ({ event, payload }) => {
   try {
-    const analyticsInfo = await getAnalyticsInfoFromBrowser();
-    const payloadSend = {
-      ...analyticsInfo,
-      userId: localStorage.getItem("userId"),
-      event: event,
-      payload: payload,
-    };
-    await POST({
-      path: Route.ANALYTICS + ANALYTICS_PATH.CREATE,
-      payload: payloadSend,
-    });
+    // const analyticsInfo = await getAnalyticsInfoFromBrowser();
+    // const payloadSend = {
+    //   ...analyticsInfo,
+    //   userId: localStorage.getItem("userId"),
+    //   event: event,
+    //   payload: payload,
+    // };
+    // await POST({
+    //   path: Route.ANALYTICS + ANALYTICS_PATH.CREATE,
+    //   payload: payloadSend,
+    // });
   } catch (err) {
     console.error("addEvent: ", err);
   }

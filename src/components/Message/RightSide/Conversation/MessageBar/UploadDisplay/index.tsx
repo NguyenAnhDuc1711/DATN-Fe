@@ -3,10 +3,10 @@ import { memo } from "react";
 import { fileTypes } from "../../../../../../Breads-Shared/Constants";
 import { useAppDispatch, useAppSelector } from "../../../../../../hooks/redux";
 import { AppState } from "../../../../../../store";
-// import { updateMsgInfo } from "../../../../../../store/MessageSlice";
+import { updateMsgInfo } from "../../../../../../store/MessageSlice";
 import { updatePostInfo } from "../../../../../../store/PostSlice";
 import { FILE_TYPES } from "../../../../../../util";
-// import { getCurrentTheme } from "../../../../../../util/Themes";
+import { getCurrentTheme } from "../../../../../../util/Themes";
 import FileMsg from "../../Body/Message/Files";
 import ItemUploadDisplay from "./ItemUploadDisplay";
 import LoadingUploadMsg from "./loading";
@@ -17,10 +17,10 @@ const UploadDisplay = ({ isPost = false, filesFromPost = null }) => {
   const { msgInfo, loadingUploadMsg, selectedConversation } = useAppSelector(
     (state: AppState) => state.message
   );
-  // const { conversationBackground } = getCurrentTheme(
-  //   selectedConversation?.theme
-  // );
-  const bg = ""; // conversationBackground?.backgroundColor;
+  const { conversationBackground } = getCurrentTheme(
+    selectedConversation?.theme
+  );
+  const bg = conversationBackground?.backgroundColor;
   const { postInfo } = useAppSelector((state: AppState) => state.post);
   const media = msgInfo.media;
   const files = filesFromPost
@@ -81,12 +81,12 @@ const UploadDisplay = ({ isPost = false, filesFromPost = null }) => {
   const handleRemoveFile = (fileIndex) => {
     const newFiles = files.filter((_, index) => index !== fileIndex);
     if (!isPost) {
-      // dispatch(
-      //   updateMsgInfo({
-      //     ...msgInfo,
-      //     files: newFiles,
-      //   })
-      // );
+      dispatch(
+        updateMsgInfo({
+          ...msgInfo,
+          files: newFiles,
+        })
+      );
     }
     if (isPost) {
       dispatch(
@@ -100,23 +100,23 @@ const UploadDisplay = ({ isPost = false, filesFromPost = null }) => {
 
   const handleRemoveMedia = (mediaIndex) => {
     const newMedia = media.filter((_, index) => index !== mediaIndex);
-    // dispatch(
-    //   updateMsgInfo({
-    //     ...msgInfo,
-    //     media: newMedia,
-    //   })
-    // );
+    dispatch(
+      updateMsgInfo({
+        ...msgInfo,
+        media: newMedia,
+      })
+    );
   };
 
   const handleRemoveAll = () => {
     if (!isPost) {
-      // dispatch(
-      //   updateMsgInfo({
-      //     ...msgInfo,
-      //     files: [],
-      //     media: [],
-      //   })
-      // );
+      dispatch(
+        updateMsgInfo({
+          ...msgInfo,
+          files: [],
+          media: [],
+        })
+      );
     }
     if (isPost) {
       dispatch(

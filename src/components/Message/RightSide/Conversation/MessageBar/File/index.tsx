@@ -8,12 +8,12 @@ import { fileTypes } from "../../../../../../Breads-Shared/Constants";
 import { useAppDispatch, useAppSelector } from "../../../../../../hooks/redux";
 import useShowToast from "../../../../../../hooks/useShowToast";
 import { AppState } from "../../../../../../store";
-// import { updateMsgInfo } from "../../../../../../store/MessageSlice";
+import { updateMsgInfo } from "../../../../../../store/MessageSlice";
 import { updatePostInfo } from "../../../../../../store/PostSlice";
 
 const FileUpload = ({ setFilesData, isPost = false }) => {
   const dispatch = useAppDispatch();
-  // const msgInfo = useAppSelector((state: AppState) => state.message.msgInfo);
+  const msgInfo = useAppSelector((state: AppState) => state.message.msgInfo);
   const postInfo = useAppSelector((state: AppState) => state.post.postInfo);
   const showToast = useShowToast();
   const fileRef = useRef<any>();
@@ -49,12 +49,12 @@ const FileUpload = ({ setFilesData, isPost = false }) => {
       });
       setFilesData(selectedFiles);
       if (!isPost) {
-        // dispatch(
-        //   updateMsgInfo({
-        //     ...msgInfo,
-        //     files: fileMetaData,
-        //   })
-        // );
+        dispatch(
+          updateMsgInfo({
+            ...msgInfo,
+            files: fileMetaData,
+          })
+        );
       } else {
         dispatch(
           updatePostInfo({
