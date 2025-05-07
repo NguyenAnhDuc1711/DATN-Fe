@@ -8,7 +8,7 @@ import {
 } from "@chakra-ui/react";
 
 const SkeletonPost = () => {
-  const bgColor = useColorModeValue("cuse.light","cuse.dark");
+  const bgColor = useColorModeValue("cuse.light", "cuse.dark");
   return (
     <Box
       padding="6"

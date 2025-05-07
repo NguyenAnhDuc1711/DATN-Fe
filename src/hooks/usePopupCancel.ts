@@ -1,16 +1,37 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-const useDebounce = (value: string, time = 500): string => {
-  const [debounceValue, setDebounceValue] = useState<string>(value);
-  useEffect(() => {
-    const timeOut = setTimeout(() => {
-      setDebounceValue(value);
-    }, time ?? 500);
-    return () => {
-      clearTimeout(timeOut);
-    };
-  }, [value, time]);
-  return debounceValue;
+type PopupBox = {
+  open: boolean;
+  title: string;
+  content: string;
+  leftBtnText: string;
+  rightBtnText: string;
+  leftBtnAction: Function;
+  rightBtnAction: Function;
 };
 
-export default useDebounce;
+const usePopupCancel = () => {
+  const defaultPopupInfo: PopupBox = {
+    open: false,
+    title: "",
+    content: "",
+    leftBtnText: "",
+    rightBtnText: "",
+    leftBtnAction: () => {},
+    rightBtnAction: () => {},
+  };
+  const [popupCancelInfo, setPopupCancelInfo] =
+    useState<PopupBox>(defaultPopupInfo);
+
+  const closePopupCancel = () => {
+    setPopupCancelInfo(defaultPopupInfo);
+  };
+
+  return {
+    popupCancelInfo,
+    setPopupCancelInfo,
+    closePopupCancel,
+  };
+};
+
+export default usePopupCancel;
