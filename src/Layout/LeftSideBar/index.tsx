@@ -14,7 +14,7 @@ import { Constants } from "../../Breads-Shared/Constants";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import PostConstants from "../../Breads-Shared/Constants/PostConstants";
 import useSocket from "../../hooks/useSocket";
-// import { updateHasNotification } from "../../store/NotificationSlice";
+import { updateHasNotification } from "../../store/NotificationSlice";
 import { updatePostAction } from "../../store/PostSlice";
 import { changeDisplayPageData } from "../../store/UtilSlice";
 import { changePage } from "../../store/UtilSlice/asyncThunk";
@@ -33,10 +33,9 @@ const LeftSideBar = () => {
   const { currentPage, displayPageData } = useAppSelector(
     (state: AppState) => state.util
   );
-  const hasNewNotification = false;
-  // useAppSelector(
-  //   (state: AppState) => state.notification.hasNewNotification
-  // );
+  const hasNewNotification = useAppSelector(
+    (state: AppState) => state.notification.hasNewNotification
+  );
 
   const linkIcon = useMemo(
     () => (
@@ -84,7 +83,7 @@ const LeftSideBar = () => {
 
   useSocket((socket) => {
     socket.on(Route.NOTIFICATION + NOTIFICATION_PATH.GET_NEW, (payload) => {
-      // dispatch(updateHasNotification(true));
+      dispatch(updateHasNotification(true));
     });
   }, []);
 
@@ -157,7 +156,7 @@ const LeftSideBar = () => {
           ...getItemPropByPage(PageConstant.ACTIVITY),
           onClick: () => {
             getItemPropByPage(PageConstant.ACTIVITY).onClick();
-            // dispatch(updateHasNotification(false));
+            dispatch(updateHasNotification(false));
           },
         },
         {

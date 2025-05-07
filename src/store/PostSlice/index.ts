@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import PostConstants from "../../Breads-Shared/Constants/PostConstants";
-// import { Media } from "../MessageSlice";
+import { Media } from "../MessageSlice";
 import {
   createPost,
   deletePost,
@@ -45,7 +45,7 @@ export interface IUserShortInfo {
 export interface IPost {
   _id?: string;
   content: string;
-  media: any[];
+  media: Media[];
   survey: ISurveyOption[];
   usersTag?: any;
   files: any;

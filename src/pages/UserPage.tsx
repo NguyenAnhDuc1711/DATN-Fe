@@ -51,7 +51,7 @@ const UserPage = () => {
 
   const fetchUserData = async () => {
     try {
-      const result: any = await dispatch(
+      const result = await dispatch(
         getUserInfo({ userId, getCurrentUser: false })
       ).unwrap();
       if (!result || result.error) {
@@ -75,7 +75,7 @@ const UserPage = () => {
 
   const handleGetUsersFollow = async () => {
     try {
-      const data: any = await GET({
+      const data: IUser | undefined | null = await GET({
         path: Route.USER + USER_PATH.USERS_FOLLOW,
         params: {
           userId: userId,

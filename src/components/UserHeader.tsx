@@ -32,10 +32,10 @@ import { AppState } from "../store";
 import { IUser } from "../store/UserSlice";
 import { changeDisplayPageData, updateSeeMedia } from "../store/UtilSlice";
 import { addEvent } from "../util";
-// import ConversationBtn from "./ConversationBtn";
+import ConversationBtn from "./ConversationBtn";
 import FollowBtn from "./FollowBtn";
-// import ListPost from "./ListPost";
-// import SkeletonPost from "./ListPost/Post/skeleton";
+import ListPost from "./ListPost";
+import SkeletonPost from "./ListPost/Post/skeleton";
 import UserFollowBox from "./UserFollowBox";
 
 const FOLLOW_TAB = {
@@ -160,7 +160,7 @@ const UserHeader = ({
         {userInfo._id !== user?._id && (
           <Flex width={"100%"} gap={4}>
             <FollowBtn user={user} />
-            {/* <ConversationBtn user={user} /> */}
+            <ConversationBtn user={user} />
           </Flex>
         )}
         <Flex w={"full"} justifyContent={"space-between"}>
@@ -299,13 +299,11 @@ const UserHeader = ({
                 {isLoading ? (
                   <Flex direction="column" gap={2}>
                     {[1, 2, 3, 4, 5].map((num) => (
-                      <></>
-                      //   <SkeletonPost key={num} />
+                      <SkeletonPost key={num} />
                     ))}
                   </Flex>
                 ) : (
-                  <></>
-                  //   <ListPost />
+                  <ListPost />
                 )}
               </TabPanel>
             ))}

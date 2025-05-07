@@ -8,7 +8,7 @@ import theme from "../theme";
 import "./animations.css";
 import App from "./App";
 import "./index.css";
-import store from "./store";
+import store from "./store/index";
 
 const root = document.getElementById("root");
 if (root) {

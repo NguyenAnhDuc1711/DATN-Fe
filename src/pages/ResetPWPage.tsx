@@ -8,7 +8,7 @@ import {
   InputRightElement,
   Text,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useDispatch } from "react-redux";
@@ -52,24 +52,26 @@ const ResetPWPage = () => {
 
   const handleSubmit = async () => {
     const { password, confirmPassword } = passwordData;
-    if (password === confirmPassword && !!userId) {
+    if (password === confirmPassword) {
       setPasswordData({ ...passwordData, passwordsMatch: true });
-      await handleUpdatePW({
-        currentPWValue: "",
-        newPWValue: passwordData.password,
-        userId: userId,
-        forgotPW: true,
-        showToast: showToast,
-        endAction: () => {
-          if (userId) {
-            setTimeout(() => {
-              navigate("/");
-              localStorage.setItem("userId", userId);
-              localStorage.removeItem("encodedCode");
-            }, 1500);
-          }
-        },
-      });
+      if (userId) {
+        await handleUpdatePW({
+          currentPWValue: "",
+          newPWValue: passwordData.password,
+          userId: userId,
+          forgotPW: true,
+          showToast: showToast,
+          endAction: () => {
+            if (userId) {
+              setTimeout(() => {
+                navigate("/");
+                localStorage.setItem("userId", userId);
+                localStorage.removeItem("encodedCode");
+              }, 1500);
+            }
+          },
+        });
+      }
     } else {
       setPasswordData({ ...passwordData, passwordsMatch: false });
     }
@@ -79,7 +81,7 @@ const ResetPWPage = () => {
     const validationErrors: any = {};
     if (!passwordData.password) {
       validationErrors.password = t("passwordRequired2");
-    } else if (passwordData.password.length < 6) {
+    } else if (passwordData.password.length <= 6) {
       validationErrors.password = t("minPassWarning");
     }
     if (

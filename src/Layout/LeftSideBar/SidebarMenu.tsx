@@ -23,7 +23,7 @@ import { changePage } from "../../store/UtilSlice/asyncThunk";
 import ClickOutsideComponent from "../../util/ClickoutCPN";
 import { useTranslation } from "react-i18next";
 import { useAppDispatch } from "../../hooks/redux";
-//   import { openPopup } from "../../store/ReportSlice";
+import { openPopup } from "../../store/ReportSlice";
 
 const SidebarMenu = () => {
   const { t, i18n } = useTranslation();
@@ -77,7 +77,7 @@ const SidebarMenu = () => {
     {
       style: { ...bgk },
       onClick: () => {
-        //   dispatch(openPopup());
+        dispatch(openPopup());
         handleCloseMenu();
       },
       name: t("report_issue"),

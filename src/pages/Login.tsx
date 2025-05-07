@@ -12,10 +12,6 @@ import {
   InputGroup,
   InputRightElement,
   Link,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalOverlay,
   Stack,
   Text,
   useColorModeValue,
@@ -26,13 +22,14 @@ import { useNavigate } from "react-router-dom";
 import { Route, USER_PATH, UTIL_PATH } from "../Breads-Shared/APIConfig";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import { encodedString } from "../Breads-Shared/util";
+import { genRandomCode } from "../Breads-Shared/util/index";
+import CodePopup from "../components/CodePopup";
 import { GET, POST } from "../config/API";
 import { useAppDispatch } from "../hooks/redux";
 import useShowToast from "../hooks/useShowToast";
 import { IUser } from "../store/UserSlice";
 import { login } from "../store/UserSlice/asyncThunk";
 import { changePage } from "../store/UtilSlice/asyncThunk";
-import { genRandomCode } from "../util/index";
 
 type LoginInput = {
   email: string;
@@ -54,7 +51,6 @@ const Login = () => {
     email: "",
     password: "",
   });
-  const [code, setCode] = useState<string>("");
   const [errors, setErrors] = useState<LoginInput>();
   const showToast = useShowToast();
   const codeSend = useRef(genRandomCode());
@@ -175,7 +171,7 @@ const Login = () => {
     }
   };
 
-  const handleSubmitCode = async () => {
+  const handleSubmitCode = async (code) => {
     try {
       if (code === codeSend.current) {
         const userId = await POST({
@@ -363,31 +359,13 @@ const Login = () => {
           </Stack>
         </Box>
       </Stack>
-      <Modal isOpen={openCodeBox} onClose={() => setOpenCodeBox(false)}>
-        <ModalOverlay />
-        <ModalContent w={"320px"} borderRadius={"10px"}>
-          <ModalBody
-            pb={6}
-            bg={useColorModeValue("white", "gray.dark")}
-            border={`1px solid ${useColorModeValue("gray.dark", "white")}`}
-            borderRadius={6}
-          >
-            <Flex flexDir={"column"}>
-              <Text textAlign={"center"} fontWeight={600} fontSize={18} py={3}>
-                {t("forgotCode")}
-              </Text>
-              <Text fontSize={14}>{t("forgotCodeDes")}</Text>
-              <Input
-                placeholder="Type your code here ..."
-                my={4}
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-              />
-              <Button onClick={() => handleSubmitCode()}>{t("submit")}</Button>
-            </Flex>
-          </ModalBody>
-        </ModalContent>
-      </Modal>
+      <CodePopup
+        isOpen={openCodeBox}
+        title={t("forgotCode")}
+        description={t("forgotCodeDes")}
+        onClose={() => setOpenCodeBox(false)}
+        onSubmit={(code) => handleSubmitCode(code)}
+      />
     </Flex>
   );
 };

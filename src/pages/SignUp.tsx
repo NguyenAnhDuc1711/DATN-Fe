@@ -21,8 +21,9 @@ import { useTranslation } from "react-i18next";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import { useAppDispatch } from "../hooks/redux";
 import useShowToast from "../hooks/useShowToast";
-import { signUp } from "../store/UserSlice/asyncThunk";
+import { signUp, validateEmailByCode } from "../store/UserSlice/asyncThunk";
 import { changePage } from "../store/UtilSlice/asyncThunk";
+import CodePopup from "../components/CodePopup";
 
 const Signup = () => {
   const { t } = useTranslation();
@@ -34,6 +35,7 @@ const Signup = () => {
     email: "",
     password: "",
   });
+  const [openCodePopup, setOpenCodePopup] = useState(false);
   const [errors, setErrors] = useState<any>({});
   const showToast = useShowToast();
 
@@ -71,6 +73,13 @@ const Signup = () => {
     return validationErrors;
   };
 
+  const handleValidateCode = async () => {
+    try {
+    } catch (err) {
+      console.error("handleValidateCode err: ", err);
+    }
+  };
+
   const handleSignup = async () => {
     const validationErrors = validateInputs();
     setErrors(validationErrors);
@@ -82,13 +91,16 @@ const Signup = () => {
       const result = await dispatch(signUp(inputs));
 
       if (result?.meta?.requestStatus === "fulfilled") {
-        showToast("Success", t("signupsuccess"), "success");
-        dispatch(
-          changePage({
-            nextPage: PageConstant.LOGIN,
-            currentPage: PageConstant.SIGNUP,
-          })
-        );
+        setOpenCodePopup(true);
+        // showToast("Success", t("signupsuccess"), "success");
+        // setTimeout(() => {
+        //   dispatch(
+        //     changePage({
+        //       nextPage: PageConstant.LOGIN,
+        //       currentPage: PageConstant.SIGNUP,
+        //     })
+        //   );
+        // }, 500)
       } else {
         const { errorType, error } = result.payload;
 
@@ -103,6 +115,38 @@ const Signup = () => {
     } catch (error: any) {
       console.error("Error in handleSignup:", error.message);
       showToast("Error", error.message || t("signupfail"), "error");
+    }
+  };
+
+  const handleValidateEmail = async (code: string) => {
+    try {
+      const result = await dispatch(
+        validateEmailByCode({
+          email: inputs.email,
+          code,
+        })
+      );
+      if (result?.meta?.requestStatus === "fulfilled") {
+        showToast("Success", t("signupsuccess"), "success");
+        setTimeout(() => {
+          dispatch(
+            changePage({
+              nextPage: PageConstant.LOGIN,
+              currentPage: PageConstant.SIGNUP,
+            })
+          );
+        }, 500);
+      } else {
+        const { errorType, error } = result.payload;
+        if (errorType === "INCORRECT_CODE") {
+          showToast("Error", error, "error");
+        }
+        if (errorType === "EXPIRED_CODE") {
+          showToast("Error", error, "error");
+        }
+      }
+    } catch (err) {
+      console.error("handleValidateEmail err: ", err);
     }
   };
 
@@ -243,7 +287,7 @@ const Signup = () => {
                 bg={useColorModeValue("gray.600", "gray.700")}
                 color={"white"}
                 _hover={{ bg: useColorModeValue("gray.700", "gray.800") }}
-                onClick={handleSignup}
+                onClick={() => handleSignup()}
               >
                 {t("SignUp")}
               </Button>
@@ -269,6 +313,13 @@ const Signup = () => {
           </Stack>
         </Box>
       </Stack>
+      <CodePopup
+        isOpen={openCodePopup}
+        title="Validate Your Email"
+        description="Using the code sent into your email to create your new account"
+        onClose={() => setOpenCodePopup(false)}
+        onSubmit={(code) => handleValidateEmail(code)}
+      />
     </Flex>
   );
 };

@@ -1,0 +1,29 @@
+/* TextArea.css */
+.text-area-container {
+  .auto-expand-textarea {
+    width: 100%;
+    font-size: inherit;
+    line-height: 1.5;
+    border-radius: 4px;
+    resize: none;
+    overflow: hidden;
+    box-sizing: border-box;
+    outline: none;
+    background-color: inherit;
+    &::placeholder {
+      color: inherit;
+    }
+  }
+  .tag-popup {
+    position: absolute;
+    display: none;
+    padding: 10px;
+    border-radius: 8px;
+    max-height: 240px;
+    width: 240px;
+    z-index: 2000;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border: 1px solid gray;
+  }
+}

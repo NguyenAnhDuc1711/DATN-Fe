@@ -1,5 +1,5 @@
 import axios, { AxiosError } from "axios";
-export const serverUrl: string = "http://localhost:8080";
+export const serverUrl: string = "http://localhost:4000";
 
 interface ApiOptions {
   path: string;

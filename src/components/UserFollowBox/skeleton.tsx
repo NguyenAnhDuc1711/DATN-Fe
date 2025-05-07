@@ -8,8 +8,8 @@ import {
 import UserBoxSekeleton from "./UserBox/skeleton";
 
 const UserFollowBoxSkeleton = ({ inFollowBox = false }) => {
-  const bgColor = useColorModeValue("cuse.light", "cuse.dark");
-  const textColor = useColorModeValue("ccl.light", "ccl.dark");
+  const bgColor = useColorModeValue("cuse.light","cuse.dark");
+  const textColor = useColorModeValue("ccl.light","ccl.dark");
   return (
     <Flex
       width={"100%"}

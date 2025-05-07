@@ -1,13 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { changePage } from "./asyncThunk";
-// import { Media } from "../MessageSlice";
+import { Media } from "../MessageSlice";
 
 export interface UtilState {
   currentPage: string;
   prevPage: string;
   seeMediaInfo: {
     open: boolean;
-    media: any[];
+    media: Media[];
     currentMediaIndex: number;
   };
   displayPageData: string;

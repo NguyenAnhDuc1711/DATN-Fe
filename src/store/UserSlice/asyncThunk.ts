@@ -8,9 +8,24 @@ import {
 } from "../../Breads-Shared/APIConfig";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import { GET, PATCH, POST, PUT } from "../../config/API";
-// import { initialMsgState } from "../MessageSlice";
+import { initialMsgState } from "../MessageSlice";
 import { initialPostState, updateListPost } from "../PostSlice";
 import { initialUtilState } from "../UtilSlice";
+
+export const validateEmailByCode = createAsyncThunk(
+  "user/validateEmailByCode",
+  async (payload: any, { rejectWithValue }) => {
+    try {
+      const data = await POST({
+        path: Route.USER + USER_PATH.VALIDATE_USER_EMAIL,
+        payload,
+      });
+      return data;
+    } catch (err) {
+      return rejectWithValue(err);
+    }
+  }
+);
 
 export const signUp = createAsyncThunk(
   "user/signUp",
@@ -68,7 +83,7 @@ export const logout = createAsyncThunk("user/logout", async (_, thunkAPI) => {
     rootState.user = initialUserState;
     rootState.post = initialPostState;
     rootState.util = initialUtilState;
-    // rootState.message = initialMsgState;
+    rootState.message = initialMsgState;
     return data;
   } catch (err: unknown) {
     if (err instanceof AxiosError) {

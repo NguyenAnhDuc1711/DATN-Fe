@@ -1,5 +1,5 @@
 import { POST } from "../config/API";
-// import { Route, UTIL_PATH, ANALYTICS_PATH } from "../Breads-Shared/APIConfig";
+import { Route, UTIL_PATH, ANALYTICS_PATH } from "../Breads-Shared/APIConfig";
 import moment from "moment";
 
 export const emojiMap = {
@@ -475,38 +475,6 @@ export const getEmojiNameFromIcon = (emojiIcon) => {
   const emjEntries = Object.entries(emojiMap);
   const emjStr = emjEntries.find((arr) => arr[1]?.icon === emojiIcon)?.[0];
   return emjStr;
-};
-
-export const listCharacter = () => {
-  const characters: string[] = [];
-  for (let i = 65; i <= 90; i++) {
-    characters.push(String.fromCharCode(i));
-  }
-  return characters;
-};
-
-export const genRandomCode = () => {
-  const characters = listCharacter();
-  let code = "";
-  for (let i = 0; i < 6; i++) {
-    let numOrCharac = Math.floor(Math.random() * 2);
-    if (numOrCharac === 0) {
-      //Code random num
-      let numChose = Math.floor(Math.random() * 10).toString();
-      code += numChose;
-    } else {
-      //Code random character
-      let upperOrlower = Math.floor(Math.random() * 2);
-      let characChose =
-        upperOrlower === 0
-          ? characters[
-              Math.floor(Math.random() * characters.length)
-            ].toLowerCase()
-          : characters[Math.floor(Math.random() * characters.length)];
-      code += characChose;
-    }
-  }
-  return code;
 };
 
 export const isAdminPage = window.location.pathname.includes("admin");
