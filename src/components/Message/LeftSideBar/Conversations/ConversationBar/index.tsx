@@ -120,7 +120,6 @@ const ConversationBar = ({
       <Stack direction={"column"} fontSize={isMobile ? "md" : "sm"}>
         <Text fontWeight={"700"} display={"flex"} alignItems={"center"}>
           {participant?.username}
-          <Image src="/verified.png" w={4} h={4} ml={1} />
         </Text>
         <Container
           p={0}

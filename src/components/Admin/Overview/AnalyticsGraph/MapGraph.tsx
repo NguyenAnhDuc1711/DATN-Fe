@@ -6,38 +6,44 @@ import {
   GeoFeature,
   ProjectionScale,
 } from "chartjs-chart-geo";
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { useAppSelector } from "../../../../hooks/redux";
 import { AppState } from "../../../../store";
 import { getLocaleId, worldAtlasData } from "./map";
+import { Skeleton } from "@chakra-ui/react";
 
 Chart.register(ChoroplethController, GeoFeature, ColorScale, ProjectionScale);
 
-const MapGraph = ({ data }: { data: any }) => {
+const MapGraph = ({
+  data,
+  isLoading = false,
+}: {
+  data: any;
+  isLoading: boolean;
+}) => {
   const dateRange = useAppSelector(
     (state: AppState) => state.admin.overview.dateRange
   );
-  const countries = useMemo(
-    () =>
-      ChartGeo.topojson.feature(
-        worldAtlasData,
-        worldAtlasData.objects.countries
-      ).features,
-    []
-  );
+
+  const countries: any = ChartGeo.topojson.feature(
+    worldAtlasData as any,
+    (worldAtlasData as any).objects.countries as any
+  ).features as any;
+
   const dataConfig = {
-    labels: countries.map((d) => d.properties.name),
+    labels: countries.map((d: any) => d.properties.name),
     datasets: [
       {
         label: "Countries",
         data: countries.map((d) => ({
           feature: d,
-          value: data?.[getLocaleId(d.properties.name)] ?? 0,
+          value: data?.[getLocaleId(d.properties.name) ?? ""] ?? 0,
         })),
       },
     ],
   };
-  const config = {
+
+  const config: any = {
     type: "choropleth",
     data: dataConfig,
     options: {
@@ -58,12 +64,18 @@ const MapGraph = ({ data }: { data: any }) => {
   };
 
   useEffect(() => {
-    const canvasHtml: any = document.getElementById("map-graph");
-    const chart = new Chart(canvasHtml?.getContext("2d"), config);
-    return () => {
-      chart.destroy();
-    };
-  }, [dateRange]);
+    if (!isLoading) {
+      const canvasHtml: any = document.getElementById("map-graph");
+      const chart = new Chart(canvasHtml?.getContext("2d"), config);
+      return () => {
+        chart.destroy();
+      };
+    }
+  }, [dateRange, isLoading]);
+
+  if (isLoading) {
+    return <Skeleton height="180px" width={"100%"} />;
+  }
 
   return <canvas id="map-graph"></canvas>;
 };

@@ -201,6 +201,7 @@ const postSlice = createSlice({
       }
       state.isLoading = false;
       state.postAction = "";
+      state.postInfo = defaultPostInfo;
     });
     builder.addCase(editPost.fulfilled, (state, action) => {
       const postUpdatedData: IPost = action.payload;

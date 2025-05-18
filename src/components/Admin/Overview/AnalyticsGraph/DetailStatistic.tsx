@@ -1,4 +1,12 @@
-import { Box, Flex, Heading, Progress, Text, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Heading,
+  Progress,
+  Skeleton,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
 import { localeMap, localeToCountry } from "./map";
 
 const DetailStatisticTable = ({
@@ -8,6 +16,7 @@ const DetailStatisticTable = ({
   subTitle = "",
   keyHead = "",
   valHead = "",
+  isLoading = false,
 }) => {
   const countries = {
     "United States": 21,
@@ -18,6 +27,40 @@ const DetailStatisticTable = ({
   };
   if (!data) {
     data = countries;
+  }
+
+  if (isLoading) {
+    return (
+      <Box
+        width="sm"
+        borderWidth="1px"
+        borderRadius="lg"
+        overflow="hidden"
+        p={4}
+      >
+        <Skeleton height="24px" width="70%" mb={2} />
+        <Flex alignItems={"center"} justifyContent={"space-between"}>
+          <Skeleton height="20px" width="50%" mb={4} />
+          <Skeleton height="20px" width="30%" mb={4} />
+        </Flex>
+
+        <VStack spacing={2} align="stretch">
+          {[1, 2, 3, 4].map((item) => (
+            <Box key={item}>
+              <Flex
+                alignItems={"center"}
+                justifyContent={"space-between"}
+                mb={1}
+              >
+                <Skeleton height="16px" width="40%" />
+                <Skeleton height="16px" width="15%" />
+              </Flex>
+              <Skeleton height="8px" width="100%" />
+            </Box>
+          ))}
+        </VStack>
+      </Box>
+    );
   }
 
   return (
@@ -50,7 +93,7 @@ const DetailStatisticTable = ({
               </Text>
               <Text>{data[key]}</Text>
             </Flex>
-            <Progress value={21} size="sm" colorScheme="blue" />
+            <Progress value={21} size="sm" colorScheme="blue" mt={1} />
           </Box>
         ))}
       </VStack>
