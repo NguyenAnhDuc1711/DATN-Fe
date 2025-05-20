@@ -10,20 +10,19 @@ import {
   useColorMode,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { BsBrightnessHigh } from "react-icons/bs";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { HiMenuAlt4 } from "react-icons/hi";
 import { MdOutlineBrightness2 } from "react-icons/md";
-import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
+import { useAppDispatch } from "../../hooks/redux";
 import useShowToast from "../../hooks/useShowToast";
+import { openPopup } from "../../store/ReportSlice";
 import { logout } from "../../store/UserSlice/asyncThunk";
 import { changePage } from "../../store/UtilSlice/asyncThunk";
 import ClickOutsideComponent from "../../util/ClickoutCPN";
-import { useTranslation } from "react-i18next";
-import { useAppDispatch } from "../../hooks/redux";
-import { openPopup } from "../../store/ReportSlice";
 
 const SidebarMenu = () => {
   const { t, i18n } = useTranslation();
@@ -67,13 +66,13 @@ const SidebarMenu = () => {
       },
       name: t("language"),
     },
-    {
-      style: { ...bgk },
-      onClick: () => {
-        navigate("/" + PageConstant.SETTING.DEFAULT);
-      },
-      name: t("settings"),
-    },
+    // {
+    //   style: { ...bgk },
+    //   onClick: () => {
+    //     navigate("/" + PageConstant.SETTING.DEFAULT);
+    //   },
+    //   name: t("settings"),
+    // },
     {
       style: { ...bgk },
       onClick: () => {

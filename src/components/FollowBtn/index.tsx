@@ -12,8 +12,9 @@ import { IUser } from "../../store/UserSlice";
 import { followUser } from "../../store/UserSlice/asyncThunk";
 import { addEvent } from "../../util";
 import UnFollowPopup from "./UnfollowPopup";
+import { openLoginPopupAction } from "../../store/UtilSlice";
 
-export const handleFlow = async (
+export const handleFollow = async (
   userInfo: IUser,
   user: IUserShortInfo,
   dispatch: any,
@@ -56,6 +57,23 @@ const FollowBtn = ({
   const showToast = useShowToast();
   const [openCancelPopup, setOpenCancelPopup] = useState<boolean>(false);
 
+  const clickFollowBtn = () => {
+    if (!userInfo?._id) {
+      dispatch(openLoginPopupAction());
+      return;
+    }
+    if (isFollowing) {
+      setOpenCancelPopup(true);
+    } else {
+      addEvent({
+        event: "follow_user",
+        payload: {
+          userId: user._id,
+        },
+      });
+      handleFollow(userInfo, user, dispatch, showToast);
+    }
+  };
   return (
     <div
       style={{
@@ -68,17 +86,7 @@ const FollowBtn = ({
         }
         size={"md"}
         onClick={() => {
-          if (isFollowing) {
-            setOpenCancelPopup(true);
-          } else {
-            addEvent({
-              event: "follow_user",
-              payload: {
-                userId: user._id,
-              },
-            });
-            handleFlow(userInfo, user, dispatch, showToast);
-          }
+          clickFollowBtn();
         }}
       >
         {isFollowing
@@ -98,7 +106,7 @@ const FollowBtn = ({
               userId: user._id,
             },
           });
-          handleFlow(userInfo, user, dispatch, showToast);
+          handleFollow(userInfo, user, dispatch, showToast);
           setOpenCancelPopup(false);
         }}
       />

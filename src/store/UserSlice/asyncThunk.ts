@@ -75,15 +75,12 @@ export const login = createAsyncThunk(
 
 export const logout = createAsyncThunk("user/logout", async (_, thunkAPI) => {
   try {
-    const rootState: any = thunkAPI.getState();
     const data = await POST({
       path: Route.USER + USER_PATH.LOGOUT,
     });
     localStorage.removeItem("userId");
-    rootState.user = initialUserState;
-    rootState.post = initialPostState;
-    rootState.util = initialUtilState;
-    rootState.message = initialMsgState;
+    // We don't need to manually reset state here anymore
+    // The root reducer will handle resetting all state when this action fulfills
     return data;
   } catch (err: unknown) {
     if (err instanceof AxiosError) {

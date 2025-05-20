@@ -201,7 +201,6 @@ function App() {
     >
       {!seeMediaInfo.open &&
         location.pathname !== "/error" &&
-        userInfo?._id &&
         wrapSuspense(<Layout />)}
       <Container maxW="620px">
         {!!userId &&

@@ -22,6 +22,7 @@ import {
 } from "../../../../store/UserSlice/asyncThunk";
 import { addEvent } from "../../../../util";
 import useCopyLink from "./CopyLink";
+import { openLoginPopupAction } from "../../../../store/UtilSlice";
 
 const PostMoreActionBox = ({
   post,
@@ -52,6 +53,10 @@ const PostMoreActionBox = ({
   const savedBefore = userInfo?.collection?.includes(postId);
 
   const handleSave = (): void => {
+    if (!userInfo?._id) {
+      dispatch(openLoginPopupAction());
+      return;
+    }
     const payload = {
       userId: userInfo._id,
       postId: postId,

@@ -6,12 +6,14 @@ import InfiniteScroll from "../../components/InfiniteScroll";
 import { GET } from "../../config/API";
 import { useAppSelector } from "../../hooks/redux";
 import { AppState } from "../../store";
+import { EmptyContentSvg } from "../../assests/icons";
 
 const ReportPage = () => {
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
   const [reports, setReports] = useState<any>([]);
   const [searchValue, setSearchValue] = useState<string>("");
   const [selectedReport, setSelectedReport] = useState(null);
+  const [firstLoad, setFirstLoad] = useState(false);
 
   const handleGetReports = async ({ page }) => {
     try {
@@ -29,6 +31,8 @@ const ReportPage = () => {
       }
     } catch (err) {
       console.error("handleGetReports: ", err);
+    } finally {
+      setFirstLoad(true);
     }
   };
   return (
@@ -50,6 +54,11 @@ const ReportPage = () => {
         deps={[searchValue]}
         preloadIndex={10}
       />
+      {firstLoad && reports?.length === 0 && (
+        <Flex justifyContent={"center"} padding={"16px"}>
+          <EmptyContentSvg />
+        </Flex>
+      )}
     </Flex>
   );
 };

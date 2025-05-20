@@ -1,19 +1,18 @@
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { Route, USER_PATH } from "../Breads-Shared/APIConfig";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import ContainerLayout from "../components/MainBoxLayout";
 import UserHeader from "../components/UserHeader";
 import { GET } from "../config/API";
+import { useAppDispatch, useAppSelector } from "../hooks/redux";
+import { AppState } from "../store";
 import { getUserPosts } from "../store/PostSlice/asyncThunk";
+import { IUser } from "../store/UserSlice";
 import { getUserInfo } from "../store/UserSlice/asyncThunk";
 import { changeDisplayPageData } from "../store/UtilSlice";
 import { changePage } from "../store/UtilSlice/asyncThunk";
 import { addEvent } from "../util";
-import { useAppDispatch, useAppSelector } from "../hooks/redux";
-import { AppState } from "../store";
-import { IUser } from "../store/UserSlice";
 
 const UserPage = () => {
   const navigate = useNavigate();
@@ -51,10 +50,10 @@ const UserPage = () => {
 
   const fetchUserData = async () => {
     try {
-      const result = await dispatch(
+      const result: any = await dispatch(
         getUserInfo({ userId, getCurrentUser: false })
       ).unwrap();
-      if (!result || result.error) {
+      if (!result || result?.error) {
         navigate("/error");
       } else {
         dispatch(
@@ -75,7 +74,7 @@ const UserPage = () => {
 
   const handleGetUsersFollow = async () => {
     try {
-      const data: IUser | undefined | null = await GET({
+      const data: any = await GET({
         path: Route.USER + USER_PATH.USERS_FOLLOW,
         params: {
           userId: userId,

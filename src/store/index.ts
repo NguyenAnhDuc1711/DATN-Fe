@@ -6,6 +6,8 @@ import PostReducer, { PostState } from "./PostSlice";
 import ReportReducer, { ReportState } from "./ReportSlice";
 import UserReducer, { UserState } from "./UserSlice";
 import UtilReducer, { UtilState } from "./UtilSlice";
+import { logout } from "./UserSlice/asyncThunk";
+import { AnyAction, combineReducers } from "@reduxjs/toolkit";
 
 export interface AppState {
   user: UserState;
@@ -17,16 +19,29 @@ export interface AppState {
   report: ReportState;
 }
 
+// Combine all reducers
+const appReducer = combineReducers({
+  user: UserReducer,
+  post: PostReducer,
+  util: UtilReducer,
+  message: MessageReducer,
+  notification: NotificationReducer,
+  admin: AdminReducer,
+  report: ReportReducer,
+});
+
+// Root reducer that will handle resetting all state on logout
+const rootReducer = (state: AppState | undefined, action: AnyAction) => {
+  // When logout action is fulfilled, reset the state of all slices
+  if (action.type === logout.fulfilled.type) {
+    return appReducer(undefined, action);
+  }
+
+  return appReducer(state, action);
+};
+
 const store = configureStore({
-  reducer: {
-    user: UserReducer,
-    post: PostReducer,
-    util: UtilReducer,
-    message: MessageReducer,
-    notification: NotificationReducer,
-    admin: AdminReducer,
-    report: ReportReducer,
-  },
+  reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,

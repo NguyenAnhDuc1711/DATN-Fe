@@ -21,7 +21,7 @@ import { IUserShortInfo } from "../../store/PostSlice";
 import { selectUser } from "../../store/UserSlice";
 import { changePage } from "../../store/UtilSlice/asyncThunk";
 import { addEvent } from "../../util";
-import { handleFlow } from "../FollowBtn";
+import { handleFollow } from "../FollowBtn";
 import UnFollowPopup from "../FollowBtn/UnfollowPopup";
 
 export const UserInfoBox = ({ user }: { user: IUserShortInfo }) => {
@@ -68,7 +68,7 @@ export const UserInfoBox = ({ user }: { user: IUserShortInfo }) => {
               if (isFollowing) {
                 setOpenCancelPopup(true);
               } else {
-                handleFlow(userInfo, user, dispatch, showToast);
+                handleFollow(userInfo, user, dispatch, showToast);
               }
             }}
           >
@@ -81,7 +81,7 @@ export const UserInfoBox = ({ user }: { user: IUserShortInfo }) => {
         isOpen={openCancelPopup}
         onClose={() => setOpenCancelPopup(false)}
         onClick={() => {
-          handleFlow(userInfo, user, dispatch, showToast);
+          handleFollow(userInfo, user, dispatch, showToast);
           setOpenCancelPopup(false);
         }}
       />

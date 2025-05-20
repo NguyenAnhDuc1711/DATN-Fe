@@ -20,10 +20,12 @@ import TextArea from "../../util/TextArea";
 import ReportMediaDisplay from "./media";
 import { sendReport } from "../../store/ReportSlice/asyncThunk";
 import { useTranslation } from "react-i18next";
+import useShowToast from "../../hooks/useShowToast";
 
 const ReportPopup = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
+  const showToast = useShowToast();
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
   const openReportPopup = useAppSelector(
     (state: AppState) => state.report.openPopup
@@ -80,6 +82,7 @@ const ReportPopup = () => {
       })
     );
     dispatch(openPopup());
+    showToast("", "Thanks for your report", "success");
   };
 
   return (

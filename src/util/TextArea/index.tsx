@@ -6,6 +6,7 @@ import { useAppSelector } from "../../hooks/redux";
 import { AppState } from "../../store";
 import CustomLinkPreview from "../CustomLinkPreview";
 import "./index.css";
+import { replaceEmojis } from "..";
 
 const getCaretCoordinates = (input) => {
   const { selectionStart } = input;
@@ -88,7 +89,7 @@ const TextArea = ({
       setUrls(extractedUrls);
     }
 
-    setText(value);
+    setText(replaceEmojis(value));
   };
 
   useEffect(() => {

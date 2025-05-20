@@ -49,7 +49,7 @@ const ReportBox = ({
     const htmlConverted = marked.parse(res);
     const payload = {
       from: "mraducky@gmail.com",
-      to: "ducna17112003@gmail.com", //report.userReport?.email,
+      to: report.userReport?.email,
       subject: "Thanks for reporting the problem",
       html: htmlConverted,
       userId: userInfo?._id,

@@ -7,12 +7,17 @@ import { AppState } from "../../store";
 import { selectConversation } from "../../store/MessageSlice";
 import { IUser } from "../../store/UserSlice";
 import { changePage } from "../../store/UtilSlice/asyncThunk";
+import { openLoginPopupAction } from "../../store/UtilSlice";
 
 const ConversationBtn = ({ user }: { user: IUser }) => {
   const dispatch = useAppDispatch();
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
   const handleClickChat = async () => {
     try {
+      if (!userInfo?._id) {
+        dispatch(openLoginPopupAction());
+        return;
+      }
       const data = await POST({
         path: Route.MESSAGE + MESSAGE_PATH.GET_CONVERSATION_BY_USERS_ID,
         payload: {

@@ -22,6 +22,8 @@ import SidebarMenu from "./SidebarMenu";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { AppState } from "../../store";
 import { TbMessageReport } from "react-icons/tb";
+import { BiLogIn } from "react-icons/bi";
+import { BiLogOut } from "react-icons/bi";
 
 const LeftSideBar = () => {
   const dispatch = useAppDispatch();
@@ -136,7 +138,8 @@ const LeftSideBar = () => {
           ...getItemPropByPage(PageConstant.ADMIN.REPORT),
         },
       ]
-    : [
+    : userInfo?._id
+    ? [
         {
           icon: <GrHomeRounded size={24} />,
           ...getItemPropByPage(PageConstant.HOME),
@@ -173,7 +176,21 @@ const LeftSideBar = () => {
           icon: messIcon,
           ...getItemPropByPage(PageConstant.CHAT),
         },
+      ]
+    : [
+        {
+          icon: <BiLogIn size={24} />,
+          ...getItemPropByPage(PageConstant.LOGIN),
+        },
       ];
+
+  if (
+    !currentPage ||
+    currentPage === PageConstant.LOGIN ||
+    currentPage === PageConstant.SIGNUP
+  ) {
+    return <></>;
+  }
 
   return (
     <Flex
@@ -266,9 +283,7 @@ const LeftSideBar = () => {
               </Box>
             ))}
           </Flex>
-          <Flex marginBottom={"10px"}>
-            <SidebarMenu />
-          </Flex>
+          <Flex marginBottom={"10px"}>{userInfo?._id && <SidebarMenu />}</Flex>
         </Flex>
       </Box>
 
@@ -327,7 +342,7 @@ const LeftSideBar = () => {
                 </Button>
               </Box>
             ))}
-          <SidebarMenu />
+          {userInfo?._id && <SidebarMenu />}
         </Flex>
       </Box>
     </Flex>
