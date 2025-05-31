@@ -6,16 +6,15 @@ import { AiOutlineFileAdd } from "react-icons/ai";
 import { iconStyle } from "..";
 import { fileTypes } from "../../../../../../Breads-Shared/Constants";
 import { useAppDispatch, useAppSelector } from "../../../../../../hooks/redux";
-import useShowToast from "../../../../../../hooks/useShowToast";
 import { AppState } from "../../../../../../store";
 import { updateMsgInfo } from "../../../../../../store/MessageSlice";
 import { updatePostInfo } from "../../../../../../store/PostSlice";
+import { showToast } from "../../../../../../store/UtilSlice";
 
 const FileUpload = ({ setFilesData, isPost = false }) => {
   const dispatch = useAppDispatch();
   const msgInfo = useAppSelector((state: AppState) => state.message.msgInfo);
   const postInfo = useAppSelector((state: AppState) => state.post.postInfo);
-  const showToast = useShowToast();
   const fileRef = useRef<any>();
   const { t } = useTranslation();
 
@@ -23,7 +22,13 @@ const FileUpload = ({ setFilesData, isPost = false }) => {
     const selectedFiles = Object.values(e.target.files);
 
     if (selectedFiles?.length > 5) {
-      showToast("", t("uploadmax"), "info");
+      dispatch(
+        showToast({
+          title: "Info",
+          description: t("uploadmax"),
+          status: "info",
+        })
+      );
       return;
     }
     if (
@@ -64,7 +69,13 @@ const FileUpload = ({ setFilesData, isPost = false }) => {
         );
       }
     } else {
-      showToast("", t("invalidtype"), "error");
+      dispatch(
+        showToast({
+          title: "Error",
+          description: t("invalidtype"),
+          status: "error",
+        })
+      );
     }
   };
 

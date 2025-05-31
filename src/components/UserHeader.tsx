@@ -27,10 +27,13 @@ import { Link as RouterLink } from "react-router-dom";
 import { EmptyContentSvg } from "../assests/icons";
 import PostConstants from "../Breads-Shared/Constants/PostConstants";
 import { useAppDispatch, useAppSelector } from "../hooks/redux";
-import useShowToast from "../hooks/useShowToast";
 import { AppState } from "../store";
 import { IUser } from "../store/UserSlice";
-import { changeDisplayPageData, updateSeeMedia } from "../store/UtilSlice";
+import {
+  changeDisplayPageData,
+  showToast,
+  updateSeeMedia,
+} from "../store/UtilSlice";
 import { addEvent } from "../util";
 import ConversationBtn from "./ConversationBtn";
 import FollowBtn from "./FollowBtn";
@@ -57,7 +60,6 @@ const UserHeader = ({
   usersFollow: any;
 }) => {
   const { t } = useTranslation();
-  const showToast = useShowToast();
   const dispatch = useAppDispatch();
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
   const { isLoading } = useAppSelector((state: AppState) => state.post);
@@ -75,7 +77,13 @@ const UserHeader = ({
     });
     const currentURL = window.location.href;
     navigator.clipboard.writeText(currentURL).then(() => {
-      showToast("", t("Profilelinkcopied"), "success");
+      dispatch(
+        showToast({
+          title: "Success",
+          description: t("Profilelinkcopied"),
+          status: "success",
+        })
+      );
     });
   };
   const hoverColor = useColorModeValue("cbg.light", "cbg.dark");
@@ -273,6 +281,7 @@ const UserHeader = ({
           <TabList width={"100%"}>
             {Object.keys(TABS).map((key) => (
               <Tab
+                key={`tab-${key}`}
                 flex={1}
                 borderBottom={"1.5px solid white"}
                 justifyContent={"center"}
@@ -299,7 +308,7 @@ const UserHeader = ({
                 {isLoading ? (
                   <Flex direction="column" gap={2}>
                     {[1, 2, 3, 4, 5].map((num) => (
-                      <SkeletonPost key={num} />
+                      <SkeletonPost key={`skeleton-${num}`} />
                     ))}
                   </Flex>
                 ) : (
@@ -347,7 +356,7 @@ const UserHeader = ({
                   usersFollow.followed?.map((user) => (
                     <UserFollowBox
                       user={user}
-                      key={user?._id}
+                      key={`user-follow-${user?._id}`}
                       inFollowBox={true}
                     />
                   ))
@@ -362,7 +371,7 @@ const UserHeader = ({
                   usersFollow.following?.map((user) => (
                     <UserFollowBox
                       user={user}
-                      key={user?._id}
+                      key={`user-follow-${user?._id}`}
                       inFollowBox={true}
                     />
                   ))

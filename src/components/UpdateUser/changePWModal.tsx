@@ -17,33 +17,38 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useSelector } from "react-redux";
 import { Route, USER_PATH } from "../../Breads-Shared/APIConfig";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import { PUT } from "../../config/API";
-import useShowToast from "../../hooks/useShowToast";
-import { useAppSelector } from "../../hooks/redux";
+import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { AppState } from "../../store";
+import { showToast } from "../../store/UtilSlice";
 
 export const handleUpdatePW = async ({
   currentPWValue,
   newPWValue,
-  showToast,
   endAction,
   userId,
   forgotPW = false,
+  dispatch,
 }: {
   currentPWValue: string;
   newPWValue: string;
-  showToast: any;
   endAction: Function;
   userId: string;
   forgotPW?: boolean;
+  dispatch: any;
 }) => {
   // const { t } = useTranslation();
   try {
     if (newPWValue.trim().length < 6) {
-      showToast("", "Password need at least 6 characters", "error");
+      dispatch(
+        showToast({
+          title: "Error",
+          description: "Password need at least 6 characters",
+          status: "error",
+        })
+      );
       return;
     }
     await PUT({
@@ -53,9 +58,14 @@ export const handleUpdatePW = async ({
         newPW: newPWValue,
         forgotPW: forgotPW,
       },
-      showToast: showToast,
     });
-    showToast("", "Update success", "success");
+    dispatch(
+      showToast({
+        title: "Success",
+        description: "Update success",
+        status: "success",
+      })
+    );
     endAction();
   } catch (err) {
     console.error(err);
@@ -65,7 +75,7 @@ export const handleUpdatePW = async ({
 
 const ChangePWModal = ({ setPopup }) => {
   const { t } = useTranslation();
-  const showToast = useShowToast();
+  const dispatch = useAppDispatch();
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
   const { colorMode } = useColorMode();
   const { currentPage } = useAppSelector((state: AppState) => state.util);
@@ -254,13 +264,13 @@ const ChangePWModal = ({ setPopup }) => {
                   currentPWValue: passwordInfo.currentPW.value,
                   newPWValue: passwordInfo.newPW.value,
                   userId: userInfo._id,
-                  showToast: showToast,
                   endAction: () => {
                     setPopup({
                       isOpen: false,
                       type: "",
                     });
                   },
+                  dispatch,
                 });
               }
             }}

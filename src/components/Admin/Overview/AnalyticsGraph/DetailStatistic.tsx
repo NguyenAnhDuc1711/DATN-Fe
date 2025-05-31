@@ -63,6 +63,11 @@ const DetailStatisticTable = ({
     );
   }
 
+  const sumValue: any = Object.values(data).reduce(
+    (accumulator: any, currentValue: any) => accumulator + currentValue,
+    0
+  );
+
   return (
     <Box width="sm" borderWidth="1px" borderRadius="lg" overflow="hidden" p={4}>
       <Heading size="md" mb={1}>
@@ -93,7 +98,12 @@ const DetailStatisticTable = ({
               </Text>
               <Text>{data[key]}</Text>
             </Flex>
-            <Progress value={21} size="sm" colorScheme="blue" mt={1} />
+            <Progress
+              value={Math.floor((data[key] / sumValue) * 100) ?? 0}
+              size="sm"
+              colorScheme="blue"
+              mt={1}
+            />
           </Box>
         ))}
       </VStack>

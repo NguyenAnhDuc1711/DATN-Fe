@@ -14,6 +14,12 @@ export interface UtilState {
   hasMoreData: boolean;
   newPostNotify: boolean;
   openLoginPopup: boolean;
+  toast: {
+    title: string;
+    description: string;
+    status: "info" | "warning" | "success" | "error" | "loading";
+    isVisible: boolean;
+  };
 }
 
 export const initialUtilState: UtilState = {
@@ -28,6 +34,12 @@ export const initialUtilState: UtilState = {
   hasMoreData: false,
   newPostNotify: false,
   openLoginPopup: false,
+  toast: {
+    title: "",
+    description: "",
+    status: "info",
+    isVisible: false,
+  },
 };
 
 const utilSlice = createSlice({
@@ -49,6 +61,18 @@ const utilSlice = createSlice({
     openLoginPopupAction: (state) => {
       state.openLoginPopup = !state.openLoginPopup;
     },
+    showToast: (state, action) => {
+      const { title, description, status } = action.payload;
+      state.toast = {
+        title,
+        description,
+        status,
+        isVisible: true,
+      };
+    },
+    clearToast: (state) => {
+      state.toast.isVisible = false;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(changePage.fulfilled, (state, action) => {
@@ -65,5 +89,7 @@ export const {
   updateHasMoreData,
   openNewPostNotify,
   openLoginPopupAction,
+  showToast,
+  clearToast,
 } = utilSlice.actions;
 export default utilSlice.reducer;

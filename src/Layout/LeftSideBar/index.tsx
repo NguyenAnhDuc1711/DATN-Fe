@@ -1,29 +1,27 @@
 import { Box, Button, Flex, Image, Link, useColorMode } from "@chakra-ui/react";
 import { useMemo } from "react";
+import { BiLogIn } from "react-icons/bi";
 import { BsFilePost } from "react-icons/bs";
 import { FaFacebookMessenger, FaRegHeart, FaUsers } from "react-icons/fa";
 import { FaRegUser } from "react-icons/fa6";
 import { FiSearch } from "react-icons/fi";
 import { GrHomeRounded, GrOverview } from "react-icons/gr";
 import { MdAdd } from "react-icons/md";
-import { useDispatch, useSelector } from "react-redux";
+import { TbMessageReport } from "react-icons/tb";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { LeftSideBarWidth } from "..";
 import { NOTIFICATION_PATH, Route } from "../../Breads-Shared/APIConfig";
 import { Constants } from "../../Breads-Shared/Constants";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import PostConstants from "../../Breads-Shared/Constants/PostConstants";
+import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import useSocket from "../../hooks/useSocket";
+import { AppState } from "../../store";
 import { updateHasNotification } from "../../store/NotificationSlice";
 import { updatePostAction } from "../../store/PostSlice";
 import { changeDisplayPageData } from "../../store/UtilSlice";
 import { changePage } from "../../store/UtilSlice/asyncThunk";
 import SidebarMenu from "./SidebarMenu";
-import { useAppDispatch, useAppSelector } from "../../hooks/redux";
-import { AppState } from "../../store";
-import { TbMessageReport } from "react-icons/tb";
-import { BiLogIn } from "react-icons/bi";
-import { BiLogOut } from "react-icons/bi";
 
 const LeftSideBar = () => {
   const dispatch = useAppDispatch();
@@ -180,7 +178,7 @@ const LeftSideBar = () => {
     : [
         {
           icon: <BiLogIn size={24} />,
-          ...getItemPropByPage(PageConstant.LOGIN),
+          ...getItemPropByPage(PageConstant.AUTH),
         },
       ];
 

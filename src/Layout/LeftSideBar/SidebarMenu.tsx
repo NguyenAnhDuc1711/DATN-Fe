@@ -18,16 +18,15 @@ import { MdOutlineBrightness2 } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import { useAppDispatch } from "../../hooks/redux";
-import useShowToast from "../../hooks/useShowToast";
 import { openPopup } from "../../store/ReportSlice";
 import { logout } from "../../store/UserSlice/asyncThunk";
+import { showToast } from "../../store/UtilSlice";
 import { changePage } from "../../store/UtilSlice/asyncThunk";
 import ClickOutsideComponent from "../../util/ClickoutCPN";
 
 const SidebarMenu = () => {
   const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
-  const showToast = useShowToast();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
@@ -129,7 +128,13 @@ const SidebarMenu = () => {
       dispatch(changePage({ nextPage: PageConstant.LOGIN }));
       navigate("/auth");
     } catch (error: any) {
-      showToast("Error", error.message, "error");
+      dispatch(
+        showToast({
+          title: "Error",
+          description: error.message,
+          status: "error",
+        })
+      );
     }
   };
 

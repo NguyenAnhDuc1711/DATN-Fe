@@ -207,11 +207,11 @@ const postSlice = createSlice({
       const postUpdatedData: IPost = action.payload;
       const listPost: IPost[] = state.listPost;
       const postInfo: IPost = state.postInfo;
-      let postPrevUpdate: IPost | undefined = listPost.find(
+      let postPrevUpdateIndex: number = listPost.findIndex(
         (post) => post._id === postUpdatedData._id
       );
-      postPrevUpdate = {
-        ...postPrevUpdate,
+      listPost[postPrevUpdateIndex] = {
+        ...listPost[postPrevUpdateIndex],
         ...postUpdatedData,
       };
       if (typeof postInfo != null) {

@@ -1,19 +1,20 @@
-import { Container } from "@chakra-ui/react";
+import { Container, useToast } from "@chakra-ui/react";
 import { lazy, LazyExoticComponent, Suspense, useEffect } from "react";
-import { useSelector } from "react-redux";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import * as APIConfig from "./Breads-Shared/APIConfig";
 import { Constants } from "./Breads-Shared/Constants";
 import PageConstant from "./Breads-Shared/Constants/PageConstants";
 import PostConstants from "./Breads-Shared/Constants/PostConstants";
+import LoginPopupScreen from "./components/LoginPopupScreen";
 import ReportPopup from "./components/Report";
-import { useAppDispatch } from "./hooks/redux";
+import { useAppDispatch, useAppSelector } from "./hooks/redux";
 import { HeaderHeight } from "./Layout";
 import BannedPage from "./pages/BannedPage";
 import Socket from "./socket";
 import { AppState } from "./store";
 import { getUserInfo } from "./store/UserSlice/asyncThunk";
-import LoginPopupScreen from "./components/LoginPopupScreen";
+import { clearToast } from "./store/UtilSlice";
+import PostDetail from "./pages/PostDetail";
 
 const AuthPage: LazyExoticComponent<() => JSX.Element> = lazy(
   () => import("./pages/AuthPage")
@@ -48,9 +49,9 @@ const ErrorPage: LazyExoticComponent<() => JSX.Element> = lazy(
 const HomePage: LazyExoticComponent<() => JSX.Element> = lazy(
   () => import("./pages/HomePage")
 );
-const PostDetail: LazyExoticComponent<() => JSX.Element> = lazy(
-  () => import("./pages/PostDetail")
-);
+// const PostDetail: LazyExoticComponent<() => JSX.Element> = lazy(
+//   () => import("./pages/PostDetail")
+// );
 const ResetPWPage: LazyExoticComponent<() => JSX.Element> = lazy(
   () => import("./pages/ResetPWPage")
 );
@@ -68,25 +69,27 @@ const UserPage: LazyExoticComponent<() => JSX.Element> = lazy(
 );
 
 const wrapSuspense = (cpn) => {
-  return <Suspense>{cpn}</Suspense>;
+  return <Suspense fallback={<div>Loading...</div>}>{cpn}</Suspense>;
 };
 
 function App() {
+  const toast = useToast();
   const dispatch = useAppDispatch();
   const location = useLocation();
   const userId = localStorage.getItem("userId");
-  const userInfo = useSelector((state: AppState) => state.user.userInfo);
-  const { seeMediaInfo, currentPage, openLoginPopup } = useSelector(
+  const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
+  const { seeMediaInfo, currentPage, openLoginPopup } = useAppSelector(
     (state: AppState) => state.util
   );
-  const postAction = useSelector((state: AppState) => state.post.postAction);
-  const openReportPopup = useSelector(
+  const postAction = useAppSelector((state: AppState) => state.post.postAction);
+  const openReportPopup = useAppSelector(
     (state: AppState) => state.report.openPopup
   );
   const { CREATE, EDIT, REPLY, REPOST } = PostConstants.ACTIONS;
   const openPostPopup = [CREATE, EDIT, REPLY, REPOST].includes(postAction);
   const isAdmin = userInfo?.role === Constants.USER_ROLE.ADMIN;
   const isBanned = userInfo?.status == Constants.USER_STATUS.BANNED;
+  const toastInfo = useAppSelector((state) => state.util.toast);
 
   useEffect(() => {
     if (!!userId) {
@@ -99,6 +102,22 @@ function App() {
       handleConnect();
     }
   }, [userInfo._id]);
+
+  useEffect(() => {
+    if (toastInfo.isVisible) {
+      toast({
+        title: toastInfo.title,
+        description: toastInfo.description,
+        status: toastInfo.status,
+        duration: 3000,
+        isClosable: true,
+      });
+      const timeout = setTimeout(() => {
+        dispatch(clearToast());
+      }, 3000);
+      return () => clearTimeout(timeout);
+    }
+  }, [toastInfo]);
 
   const handleConnect = async () => {
     const socket = Socket.getInstant();

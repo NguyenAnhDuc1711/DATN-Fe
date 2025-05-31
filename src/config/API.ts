@@ -5,7 +5,6 @@ interface ApiOptions {
   path: string;
   params?: Record<string, any>;
   payload?: Record<string, any>;
-  showToast?: (title: string, message: string, type: string) => void;
 }
 
 // Function to get JWT token from cookies
@@ -32,7 +31,7 @@ const addAuthHeader = (config: any = {}) => {
   return config;
 };
 
-export const GET = async ({ path, params, showToast }: ApiOptions) => {
+export const GET = async ({ path, params }: ApiOptions) => {
   try {
     const url = serverUrl + "/api" + path;
     let result = null;
@@ -53,12 +52,11 @@ export const GET = async ({ path, params, showToast }: ApiOptions) => {
     return result;
   } catch (err: unknown) {
     if (err instanceof AxiosError) {
-      if (showToast && err.response?.data) {
-        const errorMsg = err.response.data;
-        showToast("", errorMsg, "error");
-      } else {
-        throw new Error(err.response?.data);
-      }
+      const errorResponse = err.response?.data || {
+        errorType: "UNKNOWN_ERROR",
+        error: "An unknown error occurred!",
+      };
+      return errorResponse;
     }
     return undefined;
   }
@@ -82,13 +80,13 @@ export const POST = async ({ path, payload, params }: ApiOptions) => {
         errorType: "UNKNOWN_ERROR",
         error: "An unknown error occurred!",
       };
-      throw errorResponse; // Throw structured error
+      return errorResponse;
     }
     return undefined;
   }
 };
 
-export const PUT = async ({ path, payload, showToast }: ApiOptions) => {
+export const PUT = async ({ path, payload }: ApiOptions) => {
   try {
     const url = serverUrl + "/api" + path;
     const { data } = await axios.put(
@@ -101,18 +99,17 @@ export const PUT = async ({ path, payload, showToast }: ApiOptions) => {
     return data;
   } catch (err: unknown) {
     if (err instanceof AxiosError) {
-      if (showToast && err.response?.data) {
-        const errorMsg = err.response.data;
-        showToast("", errorMsg, "error");
-      } else {
-        throw new Error(err.response?.data);
-      }
+      const errorResponse = err.response?.data || {
+        errorType: "UNKNOWN_ERROR",
+        error: "An unknown error occurred!",
+      };
+      return errorResponse;
     }
     return undefined;
   }
 };
 
-export const PATCH = async ({ path, payload, showToast }: ApiOptions) => {
+export const PATCH = async ({ path, payload }: ApiOptions) => {
   try {
     const url = serverUrl + "/api" + path;
     const { data } = await axios.patch(
@@ -125,18 +122,17 @@ export const PATCH = async ({ path, payload, showToast }: ApiOptions) => {
     return data;
   } catch (err: unknown) {
     if (err instanceof AxiosError) {
-      if (showToast && err.response?.data) {
-        const errorMsg = err.response.data;
-        showToast("", errorMsg, "error");
-      } else {
-        throw new Error(err.response?.data);
-      }
+      const errorResponse = err.response?.data || {
+        errorType: "UNKNOWN_ERROR",
+        error: "An unknown error occurred!",
+      };
+      return errorResponse;
     }
     return undefined;
   }
 };
 
-export const DELETE = async ({ path, params, showToast }: ApiOptions) => {
+export const DELETE = async ({ path, params }: ApiOptions) => {
   try {
     const url = serverUrl + "/api" + path;
     const { data } = await axios.delete(
@@ -149,12 +145,11 @@ export const DELETE = async ({ path, params, showToast }: ApiOptions) => {
     return data;
   } catch (err: unknown) {
     if (err instanceof AxiosError) {
-      if (showToast && err.response?.data) {
-        const errorMsg = err.response.data;
-        showToast("", errorMsg, "error");
-      } else {
-        throw new Error(err.response?.data);
-      }
+      const errorResponse = err.response?.data || {
+        errorType: "UNKNOWN_ERROR",
+        error: "An unknown error occurred!",
+      };
+      return errorResponse;
     }
     return undefined;
   }

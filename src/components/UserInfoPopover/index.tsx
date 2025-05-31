@@ -15,7 +15,6 @@ import { useState } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
-import useShowToast from "../../hooks/useShowToast";
 import { AppState } from "../../store";
 import { IUserShortInfo } from "../../store/PostSlice";
 import { selectUser } from "../../store/UserSlice";
@@ -26,7 +25,6 @@ import UnFollowPopup from "../FollowBtn/UnfollowPopup";
 
 export const UserInfoBox = ({ user }: { user: IUserShortInfo }) => {
   const dispatch = useAppDispatch();
-  const showToast = useShowToast();
   const [openCancelPopup, setOpenCancelPopup] = useState(false);
   const { userInfo } = useAppSelector((state: AppState) => state.user);
   const isFollowing = userInfo?.following?.includes(user?._id);
@@ -68,7 +66,7 @@ export const UserInfoBox = ({ user }: { user: IUserShortInfo }) => {
               if (isFollowing) {
                 setOpenCancelPopup(true);
               } else {
-                handleFollow(userInfo, user, dispatch, showToast);
+                handleFollow(userInfo, user, dispatch);
               }
             }}
           >
@@ -81,7 +79,7 @@ export const UserInfoBox = ({ user }: { user: IUserShortInfo }) => {
         isOpen={openCancelPopup}
         onClose={() => setOpenCancelPopup(false)}
         onClick={() => {
-          handleFollow(userInfo, user, dispatch, showToast);
+          handleFollow(userInfo, user, dispatch);
           setOpenCancelPopup(false);
         }}
       />

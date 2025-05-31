@@ -125,7 +125,9 @@ const userSlice = createSlice({
             (_id) => _id !== userInfo?._id
           );
         } else {
-          newFlList = [...state.userSelected.followed, userInfo?._id];
+          if (state.userSelected?.followed) {
+            newFlList = [...state.userSelected.followed, userInfo?._id];
+          }
         }
         state.userSelected.followed = newFlList;
       }

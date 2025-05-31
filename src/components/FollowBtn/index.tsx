@@ -5,20 +5,18 @@ import { NOTIFICATION_PATH, Route } from "../../Breads-Shared/APIConfig";
 import { Constants } from "../../Breads-Shared/Constants";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
-import useShowToast from "../../hooks/useShowToast";
 import Socket from "../../socket";
 import { IUserShortInfo } from "../../store/PostSlice";
 import { IUser } from "../../store/UserSlice";
 import { followUser } from "../../store/UserSlice/asyncThunk";
 import { addEvent } from "../../util";
 import UnFollowPopup from "./UnfollowPopup";
-import { openLoginPopupAction } from "../../store/UtilSlice";
+import { openLoginPopupAction, showToast } from "../../store/UtilSlice";
 
 export const handleFollow = async (
   userInfo: IUser,
   user: IUserShortInfo,
-  dispatch: any,
-  showToast: Function
+  dispatch: any
 ) => {
   if (!userInfo?._id) {
     return;
@@ -38,7 +36,13 @@ export const handleFollow = async (
       target: "",
     });
   } catch (error) {
-    showToast("Error", error, "error");
+    dispatch(
+      showToast({
+        title: "Error",
+        description: error,
+        status: "error",
+      })
+    );
   }
 };
 
@@ -54,7 +58,6 @@ const FollowBtn = ({
   const userInfo = useAppSelector((state) => state.user.userInfo);
   const currentPage = useAppSelector((state) => state.util.currentPage);
   const isFollowing = userInfo?.following?.includes(user?._id);
-  const showToast = useShowToast();
   const [openCancelPopup, setOpenCancelPopup] = useState<boolean>(false);
 
   const clickFollowBtn = () => {
@@ -71,7 +74,7 @@ const FollowBtn = ({
           userId: user._id,
         },
       });
-      handleFollow(userInfo, user, dispatch, showToast);
+      handleFollow(userInfo, user, dispatch);
     }
   };
   return (
@@ -106,7 +109,7 @@ const FollowBtn = ({
               userId: user._id,
             },
           });
-          handleFollow(userInfo, user, dispatch, showToast);
+          handleFollow(userInfo, user, dispatch);
           setOpenCancelPopup(false);
         }}
       />

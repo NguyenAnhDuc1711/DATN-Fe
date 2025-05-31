@@ -133,18 +133,18 @@ const UploadDisplay = ({ isPost = false, filesFromPost = null }) => {
       <>
         {media?.map((item, index) => (
           <ItemUploadDisplay
+            key={`media-${index}`}
             item={item}
             imgSrc={item?.url}
             onClick={() => {
               handleRemoveMedia(index);
             }}
-            key={index}
             isPost={isPost}
           />
         ))}
         {files?.map((file, index) => {
           if (filesFromPost) {
-            return <FileMsg file={file} />;
+            return <FileMsg key={`file-${index}`} file={file} />;
           }
           return (
             <ItemUploadDisplay

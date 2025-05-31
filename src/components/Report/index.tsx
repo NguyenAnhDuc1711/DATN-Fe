@@ -7,25 +7,26 @@ import {
   ModalContent,
   ModalOverlay,
   Text,
+  useColorMode,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { TbLibraryPhoto } from "react-icons/tb";
 import { Constants } from "../../Breads-Shared/Constants";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import useDebounce from "../../hooks/useDebounce";
 import { AppState } from "../../store";
 import { openPopup, updateReportInfo } from "../../store/ReportSlice";
+import { sendReport } from "../../store/ReportSlice/asyncThunk";
+import { showToast } from "../../store/UtilSlice";
 import { convertToBase64 } from "../../util";
 import TextArea from "../../util/TextArea";
 import ReportMediaDisplay from "./media";
-import { sendReport } from "../../store/ReportSlice/asyncThunk";
-import { useTranslation } from "react-i18next";
-import useShowToast from "../../hooks/useShowToast";
 
 const ReportPopup = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const showToast = useShowToast();
+  const { colorMode } = useColorMode();
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
   const openReportPopup = useAppSelector(
     (state: AppState) => state.report.openPopup
@@ -82,7 +83,13 @@ const ReportPopup = () => {
       })
     );
     dispatch(openPopup());
-    showToast("", "Thanks for your report", "success");
+    dispatch(
+      showToast({
+        title: "Success",
+        description: "Thanks for your report",
+        status: "success",
+      })
+    );
   };
 
   return (
@@ -93,7 +100,11 @@ const ReportPopup = () => {
     >
       <ModalOverlay />
       <ModalContent w={"400px"} borderRadius={"10px"}>
-        <ModalBody pb={6}>
+        <ModalBody
+          pb={6}
+          bg={colorMode === "dark" ? "#202020" : "#ffffff"}
+          borderRadius={"8px"}
+        >
           <Flex flexDir={"column"} gap={3} maxH={"60vh"}>
             <Text textAlign={"center"}>{t("report_issue")}</Text>
             <TextArea

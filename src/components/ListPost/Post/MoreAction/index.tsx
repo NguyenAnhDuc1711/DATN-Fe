@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 import PageConstant from "../../../../Breads-Shared/Constants/PageConstants";
 import PostConstants from "../../../../Breads-Shared/Constants/PostConstants";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/redux";
-import useShowToast from "../../../../hooks/useShowToast";
 import { AppState } from "../../../../store";
 import {
   IPost,
@@ -22,7 +21,7 @@ import {
 } from "../../../../store/UserSlice/asyncThunk";
 import { addEvent } from "../../../../util";
 import useCopyLink from "./CopyLink";
-import { openLoginPopupAction } from "../../../../store/UtilSlice";
+import { openLoginPopupAction, showToast } from "../../../../store/UtilSlice";
 
 const PostMoreActionBox = ({
   post,
@@ -37,7 +36,6 @@ const PostMoreActionBox = ({
 }) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const showToast = useShowToast();
   const { colorMode } = useColorMode();
   const { t } = useTranslation();
   const { copyURL } = useCopyLink();
@@ -63,10 +61,22 @@ const PostMoreActionBox = ({
     };
     if (savedBefore) {
       dispatch(removePostFromCollection(payload));
-      showToast("", t("unsaved"), "success");
+      dispatch(
+        showToast({
+          title: "Success",
+          description: t("unsaved"),
+          status: "success",
+        })
+      );
     } else {
       dispatch(addPostToCollection(payload));
-      showToast("", t("saved"), "success");
+      dispatch(
+        showToast({
+          title: "Success",
+          description: t("saved"),
+          status: "success",
+        })
+      );
     }
     addEvent({
       event: savedBefore ? "unsave_post" : "save_post",
@@ -86,7 +96,13 @@ const PostMoreActionBox = ({
       });
       dispatch(deletePost({ postId: postId }));
       closePopupCancel();
-      showToast("", t("deletesuccess"), "success");
+      dispatch(
+        showToast({
+          title: "Success",
+          description: t("deletesuccess"),
+          status: "success",
+        })
+      );
       if (
         postId === postSelected?._id &&
         currentPage === PageConstant.POST_DETAIL
@@ -95,7 +111,13 @@ const PostMoreActionBox = ({
       }
     } catch (err) {
       console.error(err);
-      showToast("", err, "error");
+      dispatch(
+        showToast({
+          title: "Error",
+          description: err,
+          status: "error",
+        })
+      );
     }
   };
 

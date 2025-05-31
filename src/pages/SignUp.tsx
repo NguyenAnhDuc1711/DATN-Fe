@@ -19,11 +19,11 @@ import {
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
-import { useAppDispatch } from "../hooks/redux";
-import useShowToast from "../hooks/useShowToast";
-import { signUp, validateEmailByCode } from "../store/UserSlice/asyncThunk";
-import { changePage } from "../store/UtilSlice/asyncThunk";
 import CodePopup from "../components/CodePopup";
+import { useAppDispatch } from "../hooks/redux";
+import { signUp, validateEmailByCode } from "../store/UserSlice/asyncThunk";
+import { showToast } from "../store/UtilSlice";
+import { changePage } from "../store/UtilSlice/asyncThunk";
 
 const Signup = () => {
   const { t } = useTranslation();
@@ -37,7 +37,6 @@ const Signup = () => {
   });
   const [openCodePopup, setOpenCodePopup] = useState(false);
   const [errors, setErrors] = useState<any>({});
-  const showToast = useShowToast();
 
   const usernameRef = useRef();
   const emailRef = useRef();
@@ -106,15 +105,33 @@ const Signup = () => {
 
         // Set specific errors based on errorType
         if (errorType === "USERNAME_EXISTS") {
-          showToast("Error", t("usernameexsists"), "error");
+          dispatch(
+            showToast({
+              title: "Error",
+              description: t("usernameexsists"),
+              status: "error",
+            })
+          );
         }
         if (errorType === "EMAIL_EXISTS") {
-          showToast("Error", t("emailexsists"), "error");
+          dispatch(
+            showToast({
+              title: "Error",
+              description: t("emailexsists"),
+              status: "error",
+            })
+          );
         }
       }
     } catch (error: any) {
       console.error("Error in handleSignup:", error.message);
-      showToast("Error", error.message || t("signupfail"), "error");
+      dispatch(
+        showToast({
+          title: "Error",
+          description: error.message || t("signupfail"),
+          status: "error",
+        })
+      );
     }
   };
 
@@ -127,7 +144,13 @@ const Signup = () => {
         })
       );
       if (result?.meta?.requestStatus === "fulfilled") {
-        showToast("Success", t("signupsuccess"), "success");
+        dispatch(
+          showToast({
+            title: "Success",
+            description: t("signupsuccess"),
+            status: "success",
+          })
+        );
         setTimeout(() => {
           dispatch(
             changePage({
@@ -139,10 +162,22 @@ const Signup = () => {
       } else {
         const { errorType, error } = result.payload;
         if (errorType === "INCORRECT_CODE") {
-          showToast("Error", error, "error");
+          dispatch(
+            showToast({
+              title: "Error",
+              description: error,
+              status: "error",
+            })
+          );
         }
         if (errorType === "EXPIRED_CODE") {
-          showToast("Error", error, "error");
+          dispatch(
+            showToast({
+              title: "Error",
+              description: error,
+              status: "error",
+            })
+          );
         }
       }
     } catch (err) {

@@ -26,9 +26,9 @@ import { genRandomCode } from "../Breads-Shared/util/index";
 import CodePopup from "../components/CodePopup";
 import { GET, POST } from "../config/API";
 import { useAppDispatch } from "../hooks/redux";
-import useShowToast from "../hooks/useShowToast";
 import { IUser } from "../store/UserSlice";
 import { login } from "../store/UserSlice/asyncThunk";
+import { showToast } from "../store/UtilSlice";
 import { changePage } from "../store/UtilSlice/asyncThunk";
 
 type LoginInput = {
@@ -52,7 +52,6 @@ const Login = () => {
     password: "",
   });
   const [errors, setErrors] = useState<LoginInput>();
-  const showToast = useShowToast();
   const codeSend = useRef(genRandomCode());
 
   useEffect(() => {
@@ -112,19 +111,48 @@ const Login = () => {
     let payload = inputs;
     if (loginAsAdmin) {
       payload.loginAsAdmin = true;
-      dispatch(login(payload));
-      showToast(t("success"), "Đăng nhập bằng Admin thành công", "success");
+      const data = await dispatch(login(payload));
+      dispatch(
+        showToast({
+          title: t("success"),
+          description: "Đăng nhập bằng Admin thành công",
+          status: "success",
+        })
+      );
       return;
     }
     if (!validateField("email") || !validateField("password")) {
       return;
     }
     try {
-      console.log("payload: ", payload);
-      dispatch(login(payload));
-      showToast(t("success"), t("loginsuccess"), "success");
+      const data: any = await dispatch(login(payload));
+      if (data?.meta?.requestStatus === "fulfilled") {
+        if (data?.payload?.error) {
+          dispatch(
+            showToast({
+              title: "Không thành công!",
+              description: data?.payload?.error,
+              status: "error",
+            })
+          );
+        } else {
+          dispatch(
+            showToast({
+              title: t("success"),
+              description: t("loginsuccess"),
+              status: "success",
+            })
+          );
+        }
+      }
     } catch (error: any) {
-      showToast("Không thành công!", error?.error || t("checkagain"), "error");
+      dispatch(
+        showToast({
+          title: "Không thành công!",
+          description: error?.error || t("checkagain"),
+          status: "error",
+        })
+      );
     }
   };
 
@@ -139,7 +167,13 @@ const Login = () => {
           },
         });
         if (isValidAccount) {
-          showToast("", t("codesend"), "success");
+          dispatch(
+            showToast({
+              title: "",
+              description: t("codesend"),
+              status: "success",
+            })
+          );
           console.log("code: ", codeSend.current);
           const codeSendDecoded = encodedString(codeSend.current);
           try {
@@ -160,14 +194,32 @@ const Login = () => {
             console.error(err);
           }
         } else {
-          showToast("", t("Invalidaccount"), "error");
+          dispatch(
+            showToast({
+              title: "",
+              description: t("Invalidaccount"),
+              status: "error",
+            })
+          );
         }
       } else {
-        showToast("", t("Invalidemail"), "error");
+        dispatch(
+          showToast({
+            title: "",
+            description: t("Invalidemail"),
+            status: "error",
+          })
+        );
       }
     } catch (err) {
       console.error(err);
-      showToast("Error", "Server error", "error");
+      dispatch(
+        showToast({
+          title: "Error",
+          description: "Server error",
+          status: "error",
+        })
+      );
     }
   };
 
@@ -182,7 +234,13 @@ const Login = () => {
         });
         navigate(`/reset-pw/${userId}/${code}`);
       } else {
-        showToast("", t("wrongcode"), "error");
+        dispatch(
+          showToast({
+            title: "",
+            description: t("wrongcode"),
+            status: "error",
+          })
+        );
       }
     } catch (err) {
       console.error(err);
@@ -190,8 +248,11 @@ const Login = () => {
   };
 
   const loginForTest = (userId) => {
-    localStorage.setItem("userId", userId);
-    location.reload();
+    const objectIdRegex = /^[a-fA-F0-9]{24}$/;
+    if (objectIdRegex.test(userId)) {
+      localStorage.setItem("userId", userId);
+      location.reload();
+    }
   };
 
   if (countClickGetFullAcc >= 5) {

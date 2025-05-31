@@ -1,4 +1,4 @@
-import { Flex, Container, Image, Button } from "@chakra-ui/react";
+import { Flex, Container, Image, Button, Box, Text } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { GET } from "../../config/API";
 import { Route, USER_PATH } from "../../Breads-Shared/APIConfig";
@@ -81,7 +81,7 @@ const UsersCmsPage = () => {
   };
 
   return (
-    <div className="container">
+    <div className="container-fluid">
       <div className="my-2">
         <input
           type="text"
@@ -94,84 +94,100 @@ const UsersCmsPage = () => {
           }}
         />
       </div>
-      <table
-        className="table table-striped table-bordered"
-        style={{
-          marginBottom: "12px",
-        }}
-      >
-        <thead className="thead-dark">
-          <tr>
-            {props.map((col) => (
-              <th
-                // onClick={() => handleSort("id")}
-                style={{ cursor: "pointer", textTransform: "capitalize" }}
-              >
-                {col}
-                {/* {sortConfig.key === "id" &&
-                  (sortConfig.direction === "asc" ? "▲" : "▼")} */}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {users?.length > 0 ? (
-            users.map((user: any) => (
-              <tr key={user?._id}>
-                <td>{user?.name}</td>
-                <td>{user?.username}</td>
-                <td
+      <Box overflowX="auto" maxHeight="70vh" overflowY="auto">
+        <table className="table table-striped table-bordered table-responsive">
+          <thead
+            className="thead-dark"
+            style={{
+              position: "sticky",
+              top: 0,
+              zIndex: 1,
+              backgroundColor: "white",
+            }}
+          >
+            <tr>
+              {props.map((col) => (
+                <th
+                  key={col}
+                  // onClick={() => handleSort("id")}
                   style={{
-                    width: "60px",
+                    cursor: "pointer",
+                    textTransform: "capitalize",
+                    whiteSpace: "nowrap",
+                    padding: "12px 16px",
                   }}
                 >
-                  <Image
-                    src={user?.avatar}
-                    maxWidth={"60px"}
-                    objectFit={"cover"}
-                    maxHeight={"100px"}
-                    cursor={"pointer"}
-                    _hover={{
-                      opacity: 0.7,
-                    }}
-                  />
-                  {/* <img src={user?.avatar} /> */}
-                </td>
-                <td>
-                  <select
-                    defaultValue={user?.status}
-                    onChange={(e) =>
-                      handleUpdateUserStatus({
-                        userId: user?._id,
-                        status: Number(e.target.value),
-                      })
-                    }
+                  {col}
+                  {/* {sortConfig.key === "id" &&
+                    (sortConfig.direction === "asc" ? "▲" : "▼")} */}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {users?.length > 0 ? (
+              users.map((user: any) => (
+                <tr key={user?._id}>
+                  <td style={{ minWidth: "120px", maxWidth: "25%" }}>
+                    <Text noOfLines={1}>{user?.name}</Text>
+                  </td>
+                  <td style={{ minWidth: "120px", maxWidth: "20%" }}>
+                    <Text noOfLines={1}>{user?.username}</Text>
+                  </td>
+                  <td style={{ minWidth: "80px", width: "15%" }}>
+                    <Image
+                      src={user?.avatar}
+                      width={"60px"}
+                      height={"60px"}
+                      objectFit={"cover"}
+                      borderRadius="md"
+                      cursor={"pointer"}
+                      _hover={{
+                        opacity: 0.7,
+                      }}
+                    />
+                  </td>
+                  <td style={{ minWidth: "100px", width: "20%" }}>
+                    <select
+                      defaultValue={user?.status}
+                      onChange={(e) =>
+                        handleUpdateUserStatus({
+                          userId: user?._id,
+                          status: Number(e.target.value),
+                        })
+                      }
+                      style={{
+                        backgroundColor: "white",
+                        width: "100%",
+                        padding: "6px",
+                        borderRadius: "4px",
+                        border: "1px solid #ced4da",
+                      }}
+                    >
+                      {Object.values(Constants.USER_STATUS).map(
+                        (status: number) => (
+                          <option
+                            key={status}
+                            value={status}
+                            style={{
+                              backgroundColor: "white",
+                            }}
+                          >
+                            {convertUserStatus(status)}
+                          </option>
+                        )
+                      )}
+                    </select>
+                  </td>
+                  <td
                     style={{
-                      backgroundColor: "white",
+                      minWidth: "120px",
+                      width: "20%",
+                      textAlign: "center",
                     }}
-                  >
-                    {Object.values(Constants.USER_STATUS).map(
-                      (status: number) => (
-                        <option
-                          value={status}
-                          style={{
-                            backgroundColor: "white",
-                          }}
-                        >
-                          {convertUserStatus(status)}
-                        </option>
-                      )
-                    )}
-                  </select>
-                </td>
-                <td>
-                  <Flex
-                    width={"100%"}
-                    height={"100%"}
-                    justifyContent={"center"}
-                    alignItems={"center"}
                   >
                     <Button
+                      size="sm"
                       color="black"
                       border={"1px solid black"}
                       onClick={() => {
@@ -180,21 +196,21 @@ const UsersCmsPage = () => {
                     >
                       See detail
                     </Button>
-                  </Flex>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={props.length} className="text-center">
+                  No matching data found
                 </td>
               </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan={props.length} className="text-center">
-                No matching data found
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+            )}
+          </tbody>
+        </table>
+      </Box>
       {totalPages > 1 && (
-        <nav className="d-flex justify-content-center">
+        <nav className="d-flex justify-content-center mt-3">
           <PaginationBtn
             totalPages={totalPages}
             currentPage={currentPage}

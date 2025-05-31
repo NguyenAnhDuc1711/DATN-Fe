@@ -5,10 +5,10 @@ import "react-date-range/dist/styles.css"; // main style file
 import "react-date-range/dist/theme/default.css"; // theme css file
 import { getDateYYYYMMDD } from "..";
 import { useAppDispatch, useAppSelector } from "../../../../../hooks/redux";
+import { AppState } from "../../../../../store";
 import { updateDateRangeOverview } from "../../../../../store/AdminSlice";
 import ClickOutsideComponent from "../../../../../util/ClickoutCPN";
 import "./index.css";
-import { AppState } from "../../../../../store";
 
 const DateRangeView = () => {
   const dispatch = useAppDispatch();
@@ -26,8 +26,16 @@ const DateRangeView = () => {
   const [openDatePickle, setOpenDatePickle] = useState(false);
 
   const displayDateRangeText = () => {
-    const start = getDateYYYYMMDD(dateRangeState[0].startDate.getTime());
-    const end = getDateYYYYMMDD(dateRangeState[0].endDate.getTime());
+    const startDate = dateRangeState[0]?.startDate;
+    const endDate = dateRangeState[0]?.endDate;
+    const start =
+      typeof startDate == "string"
+        ? startDate
+        : getDateYYYYMMDD(startDate?.getTime());
+    const end =
+      typeof endDate == "string"
+        ? endDate
+        : getDateYYYYMMDD(endDate?.getTime());
     if (start === end) {
       return start;
     }

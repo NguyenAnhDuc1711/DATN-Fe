@@ -17,7 +17,6 @@ import PostConstants from "../../Breads-Shared/Constants/PostConstants";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import useDebounce from "../../hooks/useDebounce";
 import usePopupCancel from "../../hooks/usePopupCancel";
-import useShowToast from "../../hooks/useShowToast";
 import Socket from "../../socket";
 import { AppState } from "../../store";
 import {
@@ -29,7 +28,7 @@ import {
   updatePostInfo,
 } from "../../store/PostSlice";
 import { createPost, editPost } from "../../store/PostSlice/asyncThunk";
-import { openNewPostNotify } from "../../store/UtilSlice";
+import { openNewPostNotify, showToast } from "../../store/UtilSlice";
 import {
   addEvent,
   generateObjectId,
@@ -49,7 +48,6 @@ const PostPopup = () => {
   const MAX_CONTENT_LENGTH = 500;
   const postId = window.location.pathname.split("/")?.[2];
   const { t } = useTranslation();
-  const showToast = useShowToast();
   const bgColor = useColorModeValue("cbg.light", "cbg.dark");
   const textColor = useColorModeValue("ccl.dark", "ccl.light");
 
@@ -212,10 +210,9 @@ const PostPopup = () => {
             target: payload._id,
           });
         }
-        await dispatch(
+        const uploadPost = await dispatch(
           createPost({ postPayload: payload, action: postAction })
         ).unwrap();
-        dispatch(openNewPostNotify());
         if (!!notificationPayload?.toUsers?.length) {
           notificationPayload = {
             ...notificationPayload,
@@ -229,8 +226,14 @@ const PostPopup = () => {
         }
       }
     } catch (err: any) {
-      console.error(err);
-      showToast("Error", err.message, "error");
+      console.error("err: ", err);
+      dispatch(
+        showToast({
+          title: "Error",
+          description: err.message,
+          status: "error",
+        })
+      );
     }
   };
 
@@ -271,7 +274,13 @@ const PostPopup = () => {
     if (value.length <= 500) {
       setContent(replaceEmojis(value));
     } else {
-      showToast("", t("maxforpost"), "error");
+      dispatch(
+        showToast({
+          title: "Error",
+          description: t("maxforpost"),
+          status: "error",
+        })
+      );
     }
   };
 
@@ -368,7 +377,13 @@ const PostPopup = () => {
               onClick={() => {
                 const { checkCondition, msg } = checkUploadCondition();
                 if (!checkCondition) {
-                  showToast("Error", msg, "error");
+                  dispatch(
+                    showToast({
+                      title: "Error",
+                      description: msg,
+                      status: "error",
+                    })
+                  );
                   return;
                 }
                 setClickPost(true);

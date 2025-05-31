@@ -8,25 +8,22 @@ import {
   InputRightElement,
   Text,
 } from "@chakra-ui/react";
-import { useEffect, useId, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import { decodeString } from "../Breads-Shared/util";
 import { handleUpdatePW } from "../components/UpdateUser/changePWModal";
-import useShowToast from "../hooks/useShowToast";
-import { changePage } from "../store/UtilSlice/asyncThunk";
-import ErrorPage from "./ErrorPage";
-import { addEvent } from "../util";
 import { useAppDispatch } from "../hooks/redux";
+import { changePage } from "../store/UtilSlice/asyncThunk";
+import { addEvent } from "../util";
+import ErrorPage from "./ErrorPage";
 
 const ResetPWPage = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const showToast = useShowToast();
   const { userId, code } = useParams();
   const encodedCode = localStorage.getItem("encodedCode");
   const isTrueCode: boolean = decodeString(encodedCode ?? "") === code;
@@ -60,9 +57,9 @@ const ResetPWPage = () => {
           newPWValue: passwordData.password,
           userId: userId,
           forgotPW: true,
-          showToast: showToast,
           endAction: () => {
-            if (userId) {
+            const objectIdRegex = /^[a-fA-F0-9]{24}$/;
+            if (userId && objectIdRegex.test(userId)) {
               setTimeout(() => {
                 navigate("/");
                 localStorage.setItem("userId", userId);
@@ -70,6 +67,7 @@ const ResetPWPage = () => {
               }, 1500);
             }
           },
+          dispatch,
         });
       }
     } else {
@@ -81,7 +79,7 @@ const ResetPWPage = () => {
     const validationErrors: any = {};
     if (!passwordData.password) {
       validationErrors.password = t("passwordRequired2");
-    } else if (passwordData.password.length <= 6) {
+    } else if (passwordData.password.length < 6) {
       validationErrors.password = t("minPassWarning");
     }
     if (

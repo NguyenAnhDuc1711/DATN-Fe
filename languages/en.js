@@ -5,7 +5,7 @@ const enTranslations = {
   language: "Language",
   settings: "Settings",
   report_issue: "Report a problem",
-  describe_issue: "Descibe the problem ...",
+  describe_issue: "Describe the problem ...",
   logout: "Logout",
   english: "English",
   vietnamese: "Vietnamese",

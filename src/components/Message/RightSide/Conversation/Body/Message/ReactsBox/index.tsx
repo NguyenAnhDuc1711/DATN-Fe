@@ -44,7 +44,7 @@ const MessageReactsBox = ({
     return (
       <TabList>
         {headerEmj.map((item: any, index) => (
-          <Tab>
+          <Tab key={`tab-${index}`}>
             {index === 0 ? item.emoji : getEmojiIcon(item.emoji) + item?.count}
           </Tab>
         ))}
@@ -60,9 +60,14 @@ const MessageReactsBox = ({
           const userReacts = reacts.filter(({ react }) => react === tab);
           const displayList = index === 0 ? reacts : userReacts;
           return (
-            <TabPanel p={0} mt={3}>
+            <TabPanel p={0} mt={3} key={`tab-${tab}`}>
               {displayList?.map(({ userId, react }) => (
-                <UserReactItem userId={userId} react={react} msgId={msgId} />
+                <UserReactItem
+                  key={`user-react-${userId}`}
+                  userId={userId}
+                  react={react}
+                  msgId={msgId}
+                />
               ))}
             </TabPanel>
           );
@@ -88,7 +93,9 @@ const MessageReactsBox = ({
       >
         <Flex>
           {setEmoji?.map((react) => (
-            <Text fontSize={"12px"}>{getEmojiIcon(react)}</Text>
+            <div key={`react-${react}`}>
+              <Text fontSize={"12px"}>{getEmojiIcon(react)}</Text>
+            </div>
           ))}
         </Flex>
         <Text fontSize={"12px"} fontWeight={600} color={"black"}>

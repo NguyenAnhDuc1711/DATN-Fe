@@ -121,7 +121,6 @@ const MessageAction = ({ ownMsg, msg, previousReact }) => {
           react: react,
         },
         ({ data }) => {
-          console.log("data: ", data);
           setDisplayReactBox(false);
           if (data?._id) {
             dispatch(updateMsg(data));
@@ -220,6 +219,7 @@ const MessageAction = ({ ownMsg, msg, previousReact }) => {
           >
             {defaultEmoji.map((emjStr) => (
               <IconWrapper
+                key={`emj-${emjStr}`}
                 addBg={previousReact === emjStr ? true : false}
                 icon={
                   <Text

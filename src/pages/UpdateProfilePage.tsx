@@ -21,9 +21,9 @@ import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import ChangePWModal from "../components/UpdateUser/changePWModal";
 import LinksModal from "../components/UpdateUser/linksModal";
 import { useAppDispatch, useAppSelector } from "../hooks/redux";
-import useShowToast from "../hooks/useShowToast";
 import { AppState } from "../store";
 import { updateUser } from "../store/UserSlice/asyncThunk";
+import { showToast } from "../store/UtilSlice";
 import { changePage } from "../store/UtilSlice/asyncThunk";
 import { addEvent, convertToBase64 } from "../util/index";
 
@@ -49,7 +49,6 @@ const UpdateProfilePage = () => {
   });
   const fileRef = useRef<any>(null);
   const [updating, setUpdating] = useState(false);
-  const showToast = useShowToast();
 
   useEffect(() => {
     if (userInfo._id) {
@@ -70,7 +69,13 @@ const UpdateProfilePage = () => {
 
   useEffect(() => {
     if (updating && userInfo?._id) {
-      showToast("Success", t("updateProfile"), "success");
+      dispatch(
+        showToast({
+          title: "Success",
+          description: t("updateProfile"),
+          status: "success",
+        })
+      );
       dispatch(changePage({ nextPage: PageConstant.USER }));
       navigate(`/users/${userInfo._id}`);
       setUpdating(false);
@@ -87,13 +92,25 @@ const UpdateProfilePage = () => {
     }
     const needUpdate = compareUpdateValue(payload);
     if (!needUpdate || updating) {
-      showToast("", !needUpdate ? t("nothingtoupdate") : "Loading", "info");
+      dispatch(
+        showToast({
+          title: "",
+          description: !needUpdate ? t("nothingtoupdate") : "Loading",
+          status: "info",
+        })
+      );
       return;
     }
     for (let key of Object.keys(payload)) {
       const msg = payloadValidation(payload, key);
       if (msg) {
-        showToast("", msg, "error");
+        dispatch(
+          showToast({
+            title: "",
+            description: msg,
+            status: "error",
+          })
+        );
         return;
       }
     }
@@ -101,10 +118,12 @@ const UpdateProfilePage = () => {
       dispatch(updateUser(payload));
       setUpdating(true);
     } catch (error: any) {
-      showToast(
-        "Error",
-        error.message || "An unexpected error occurred",
-        "error"
+      dispatch(
+        showToast({
+          title: "Error",
+          description: error.message || "An unexpected error occurred",
+          status: "error",
+        })
       );
     }
   };

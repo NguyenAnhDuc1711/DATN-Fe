@@ -62,7 +62,10 @@ export const login = createAsyncThunk(
         });
       }
       if (data) {
-        localStorage.setItem("userId", data?._id);
+        const objectIdRegex = /^[a-fA-F0-9]{24}$/;
+        if (data?._id && objectIdRegex.test(data?._id)) {
+          localStorage.setItem("userId", data?._id);
+        }
       }
       return data;
     } catch (err: unknown) {

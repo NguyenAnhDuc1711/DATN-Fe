@@ -1,11 +1,10 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
+import { AxiosError } from "axios";
+import { IPost } from ".";
 import { POST_PATH, Route } from "../../Breads-Shared/APIConfig";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import { DELETE, GET, POST, PUT } from "../../config/API";
-import { updateHasMoreData } from "../UtilSlice";
-import { AppState } from "..";
-import { AxiosError } from "axios";
-import { IPost } from ".";
+import { openNewPostNotify, showToast, updateHasMoreData } from "../UtilSlice";
 
 export const createPost = createAsyncThunk(
   "post/create",
@@ -25,6 +24,7 @@ export const createPost = createAsyncThunk(
           (option) => option.value.trim() !== ""
         );
       }
+      const dispatch = thunkApi.dispatch;
       const rootState: any = thunkApi.getState();
       const currerntPage = rootState.util.currentPage;
       const data = await POST({
@@ -34,6 +34,19 @@ export const createPost = createAsyncThunk(
           action: action,
         },
       });
+      const errMsg = data?.error;
+      if (data && !errMsg) {
+        dispatch(openNewPostNotify());
+      }
+      if (errMsg) {
+        dispatch(
+          showToast({
+            title: "Error",
+            description: errMsg,
+            status: "error",
+          })
+        );
+      }
       return {
         data,
         currentPage: currerntPage,

@@ -1,4 +1,4 @@
-import { Button, Container, Flex, Image } from "@chakra-ui/react";
+import { Button, Container, Flex, Image, Box, Text } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { POST_PATH, Route } from "../../Breads-Shared/APIConfig";
 import { Constants } from "../../Breads-Shared/Constants";
@@ -34,7 +34,7 @@ const PostsCmsPage = () => {
 
   const handleGetPosts = async () => {
     try {
-      const data: IPost[] | null | undefined = await GET({
+      const data: any = await GET({
         path: Route.POST + POST_PATH.GET_ALL,
         params: {
           filter: { page: PageConstants.ADMIN.POSTS },
@@ -62,24 +62,21 @@ const PostsCmsPage = () => {
       replies,
       repostNum,
       usersLike,
-    }: any) => {
-      const statistic = {
+    }: any) => ({
+      _id,
+      author: authorInfo?.username,
+      content,
+      media,
+      files,
+      survey,
+      type,
+      status,
+      statistic: {
         like: usersLike?.length,
         reply: replies?.length,
         repost: repostNum,
-      };
-      return {
-        _id,
-        author: authorInfo?.username,
-        content,
-        media,
-        files,
-        survey,
-        type,
-        status,
-        statistic,
-      };
-    }
+      },
+    })
   );
 
   // State for search, sorting, pagination, and data
@@ -139,7 +136,7 @@ const PostsCmsPage = () => {
   };
 
   return (
-    <div className="container mt-2">
+    <div className="container-fluid mt-2">
       <Flex justifyContent={"space-between"} my={2}>
         <h2>Posts CMS</h2>
         <Button
@@ -170,161 +167,169 @@ const PostsCmsPage = () => {
         />
       </div>
 
-      {/* Table */}
-      <table
-        className="table table-striped table-bordered"
-        style={{
-          maxHeight: "50vh",
-        }}
-      >
-        <thead className="thead-dark">
-          <tr>
-            {props.map((col) => (
-              <th
-                onClick={() => handleSort("id")}
-                style={{ cursor: "pointer", textTransform: "capitalize" }}
-              >
-                {col}
-                {sortConfig.key === "id" &&
-                  (sortConfig.direction === "asc" ? "▲" : "▼")}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {paginatedData.length > 0 ? (
-            paginatedData.map((row) => (
-              <tr key={row._id}>
-                <td style={{ width: "120px" }}>{row.author}</td>
-                <td
+      {/* Table container with responsive scrolling */}
+      <Box overflowX="auto" maxHeight="70vh" overflowY="auto">
+        <table className="table table-striped table-bordered table-responsive">
+          <thead
+            className="thead-dark"
+            style={{
+              position: "sticky",
+              top: 0,
+              zIndex: 1,
+              backgroundColor: "white",
+            }}
+          >
+            <tr>
+              {props.map((col) => (
+                <th
+                  key={col}
+                  onClick={() => handleSort(col)}
                   style={{
-                    width: "120px",
+                    cursor: "pointer",
+                    textTransform: "capitalize",
+                    whiteSpace: "nowrap",
                   }}
                 >
-                  {row.content}
-                </td>
-                <td
-                  style={{
-                    width: "120px",
-                  }}
-                >
-                  {row.media.length > 0 && (
-                    <Container
-                      style={{
-                        position: "relative",
-                        maxWidth: "120px",
-                        width: "fit-content",
-                        cursor: "absolute",
-                      }}
-                    >
-                      {row.media?.[0]?.type === Constants.MEDIA_TYPE.VIDEO ? (
-                        <video
-                          src={row.media?.[0]?.url}
-                          style={{
-                            maxWidth: "100%",
-                            objectFit: "cover",
-                            maxHeight: "100px",
-                          }}
-                          onClick={(e) => {
-                            handleSeeMedia(row.media, 0);
-                            e.stopPropagation();
-                          }}
+                  {col}
+                  {sortConfig.key === col &&
+                    (sortConfig.direction === "asc" ? " ▲" : " ▼")}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {paginatedData.length > 0 ? (
+              paginatedData.map((row) => (
+                <tr key={row._id}>
+                  <td style={{ minWidth: "80px", maxWidth: "10%" }}>
+                    <Text noOfLines={2}>{row.author}</Text>
+                  </td>
+                  <td style={{ minWidth: "100px", maxWidth: "15%" }}>
+                    <Text noOfLines={3}>{row.content}</Text>
+                  </td>
+                  <td style={{ minWidth: "100px", width: "12%" }}>
+                    {row.media.length > 0 && (
+                      <Container
+                        p={0}
+                        style={{
+                          position: "relative",
+                          width: "100%",
+                          cursor: "pointer",
+                        }}
+                      >
+                        {row.media?.[0]?.type === Constants.MEDIA_TYPE.VIDEO ? (
+                          <video
+                            src={row.media?.[0]?.url}
+                            style={{
+                              width: "100%",
+                              objectFit: "cover",
+                              maxHeight: "80px",
+                            }}
+                            onClick={(e) => {
+                              handleSeeMedia(row.media, 0);
+                              e.stopPropagation();
+                            }}
+                          />
+                        ) : (
+                          <Image
+                            src={row.media?.[0]?.url}
+                            width={"100%"}
+                            objectFit={"cover"}
+                            maxHeight={"80px"}
+                            cursor={"pointer"}
+                            _hover={{
+                              opacity: 0.7,
+                            }}
+                            onClick={(e) => {
+                              handleSeeMedia(row.media, 0);
+                              e.stopPropagation();
+                            }}
+                          />
+                        )}
+                        {row.media.length - 1 > 0 && (
+                          <div
+                            style={{
+                              position: "absolute",
+                              left: "50%",
+                              top: "50%",
+                              color: "white",
+                              transform: "translate(-50%, -50%)",
+                              cursor: "pointer",
+                              zIndex: 0,
+                            }}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                            }}
+                          >
+                            + {row.media.length - 1}
+                          </div>
+                        )}
+                      </Container>
+                    )}
+                  </td>
+                  <td style={{ minWidth: "150px", maxWidth: "15%" }}>
+                    <Flex flexDir={"column"} gap={1}>
+                      {row.files.map((file, index) => (
+                        <FileMsg
+                          key={`row-${row._id}-file-${index}`}
+                          file={file}
                         />
-                      ) : (
-                        <Image
-                          src={row.media?.[0]?.url}
-                          maxWidth={"100%"}
-                          objectFit={"cover"}
-                          maxHeight={"100px"}
-                          cursor={"pointer"}
-                          _hover={{
-                            opacity: 0.7,
-                          }}
-                          onClick={(e) => {
-                            handleSeeMedia(row.media, 0);
-                            e.stopPropagation();
-                          }}
-                        />
-                      )}
-                      {row.media.length - 1 > 0 && (
-                        <div
-                          style={{
-                            position: "absolute",
-                            left: "50%",
-                            top: "50%",
-                            color: "white",
-                            transform: "translate(-50%, -50%)",
-                            cursor: "pointer",
-                            zIndex: 0,
-                          }}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                          }}
-                        >
-                          + {row.media.length - 1}
-                        </div>
-                      )}
-                    </Container>
-                  )}
-                </td>
-                <td style={{ width: "200px" }}>
-                  <Flex flexDir={"column"} gap={1}>
-                    {row.files.map((file) => (
-                      <FileMsg file={file} />
+                      ))}
+                    </Flex>
+                  </td>
+                  <td style={{ minWidth: "150px", width: "15%" }}>
+                    <Survey post={row} />
+                  </td>
+                  <td
+                    style={{
+                      textTransform: "capitalize",
+                      minWidth: "80px",
+                      width: "8%",
+                    }}
+                  >
+                    <Text noOfLines={1}>{row.type}</Text>
+                  </td>
+                  <td
+                    style={{
+                      textTransform: "capitalize",
+                      minWidth: "80px",
+                      width: "8%",
+                    }}
+                  >
+                    <Text noOfLines={1}>
+                      {convertStatus(row.status)?.toLowerCase()}
+                    </Text>
+                  </td>
+                  <td style={{ minWidth: "90px", width: "10%" }}>
+                    {Object.entries(row.statistic).map(([key, value]) => (
+                      <p
+                        key={`row-${row._id}-statistic-${key}`}
+                        style={{
+                          margin: 0,
+                          textTransform: "capitalize",
+                        }}
+                      >
+                        {key}: {value}
+                      </p>
                     ))}
-                  </Flex>
-                </td>
-                <td style={{ width: "160px" }}>
-                  <Survey post={row} />
-                </td>
-                <td
-                  style={{
-                    textTransform: "capitalize",
-                    width: "100px",
-                  }}
-                >
-                  {row.type}
-                </td>
-                <td
-                  style={{
-                    textTransform: "capitalize",
-                    width: "100px",
-                  }}
-                >
-                  {convertStatus(row.status)?.toLowerCase()}
-                </td>
-                <td
-                  style={{
-                    width: "100px",
-                  }}
-                >
-                  {Object.entries(row.statistic).map(([key, value]) => (
-                    <p
-                      style={{
-                        margin: 0,
-                        textTransform: "capitalize",
-                      }}
-                    >
-                      {key} : {value}
-                    </p>
-                  ))}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={props.length} className="text-center">
+                  No matching data found
                 </td>
               </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan={props.length} className="text-center">
-                No matching data found
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+            )}
+          </tbody>
+        </table>
+      </Box>
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <nav className="d-flex justify-content-center">
+        <nav className="d-flex justify-content-center mt-3">
           <PaginationBtn
             totalPages={totalPages}
             currentPage={currentPage}
