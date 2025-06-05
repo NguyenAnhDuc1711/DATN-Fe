@@ -10,8 +10,11 @@ import { AppState } from "../store";
 import { getPost } from "../store/PostSlice/asyncThunk";
 import { changePage } from "../store/UtilSlice/asyncThunk";
 import { addEvent } from "../util";
+import { showToast } from "../store/UtilSlice";
+import { useTranslation } from "react-i18next";
 
 const PostDetail = () => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const postId = window.location.pathname.split("/")?.[2];
   const userInfo = useAppSelector((state: AppState) => state.user.userInfo);
@@ -40,10 +43,28 @@ const PostDetail = () => {
     const { PENDING, PUBLIC, ONLY_ME, ONLY_FOLLOWERS, DELETED } =
       Constants.POST_STATUS;
     let ableToDisplayPost: boolean = !!userInfo?._id;
+    console.log("ableToDisplayPost: ", ableToDisplayPost);
 
     switch (postStatus) {
       case PENDING:
       case DELETED:
+        if (postStatus === DELETED) {
+          dispatch(
+            showToast({
+              title: "",
+              description: t("postDeleted"),
+              status: "error",
+            })
+          );
+        } else {
+          dispatch(
+            showToast({
+              title: "",
+              description: t("postPending"),
+              status: "info",
+            })
+          );
+        }
         ableToDisplayPost = false;
         break;
       case ONLY_ME:

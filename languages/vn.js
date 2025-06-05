@@ -158,6 +158,9 @@ const vnTranslations = {
   countLike: "Lượt thích",
   countCmt: "Bình luận",
   countRepost: "Lượt đăng lại",
+
+  postDeleted: "Bài viết đã bị xóa",
+  postPending: "Bài viết đang chờ duyệt",
 };
 
 export default vnTranslations;

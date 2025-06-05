@@ -148,6 +148,7 @@ const postSlice = createSlice({
     });
     builder.addCase(getPost.fulfilled, (state, action) => {
       const postSelected = action.payload;
+      console.log("postSelected: ", postSelected);
       if (postSelected) {
         state.postSelected = postSelected;
       }

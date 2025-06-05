@@ -73,7 +73,7 @@ const DateRangeView = () => {
               }
               setOpenDatePickle(false);
             }}
-            months={1}
+            months={2}
             moveRangeOnFirstSelection={false}
             showDateDisplay={false}
             ranges={dateRangeState}

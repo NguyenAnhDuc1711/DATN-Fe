@@ -37,6 +37,8 @@ const DetailStatisticTable = ({
         borderRadius="lg"
         overflow="hidden"
         p={4}
+        maxHeight={"100%"}
+        overflowY={"auto"}
       >
         <Skeleton height="24px" width="70%" mb={2} />
         <Flex alignItems={"center"} justifyContent={"space-between"}>

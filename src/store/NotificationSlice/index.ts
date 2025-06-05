@@ -20,6 +20,9 @@ const notificationSlice = createSlice({
     updateHasNotification: (state, action) => {
       state.hasNewNotification = action.payload;
     },
+    addNotification: (state, action) => {
+      state.notifications.unshift(action.payload);
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(getNotificattions.pending, (state) => {
@@ -37,5 +40,6 @@ const notificationSlice = createSlice({
   },
 });
 
-export const { updateHasNotification } = notificationSlice.actions;
+export const { updateHasNotification, addNotification } =
+  notificationSlice.actions;
 export default notificationSlice.reducer;

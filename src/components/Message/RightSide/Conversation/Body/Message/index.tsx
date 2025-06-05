@@ -109,7 +109,7 @@ const Message = ({
             zIndex: 2000,
           }}
         >
-          <MessageReactsBox reacts={reacts} msgId={msg?._id} />
+          <MessageReactsBox reacts={reacts} msgId={msg?._id || ""} />
         </div>
       );
     };

@@ -60,11 +60,12 @@ const ResetPWPage = () => {
           endAction: () => {
             const objectIdRegex = /^[a-fA-F0-9]{24}$/;
             if (userId && objectIdRegex.test(userId)) {
+              localStorage.setItem("userId", userId);
+              localStorage.removeItem("encodedCode");
               setTimeout(() => {
                 navigate("/");
-                localStorage.setItem("userId", userId);
-                localStorage.removeItem("encodedCode");
-              }, 1500);
+                window.location.reload();
+              }, 100);
             }
           },
           dispatch,

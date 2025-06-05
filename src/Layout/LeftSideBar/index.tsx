@@ -17,7 +17,10 @@ import PostConstants from "../../Breads-Shared/Constants/PostConstants";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import useSocket from "../../hooks/useSocket";
 import { AppState } from "../../store";
-import { updateHasNotification } from "../../store/NotificationSlice";
+import {
+  addNotification,
+  updateHasNotification,
+} from "../../store/NotificationSlice";
 import { updatePostAction } from "../../store/PostSlice";
 import { changeDisplayPageData } from "../../store/UtilSlice";
 import { changePage } from "../../store/UtilSlice/asyncThunk";
@@ -84,6 +87,7 @@ const LeftSideBar = () => {
   useSocket((socket) => {
     socket.on(Route.NOTIFICATION + NOTIFICATION_PATH.GET_NEW, (payload) => {
       dispatch(updateHasNotification(true));
+      dispatch(addNotification(payload));
     });
   }, []);
 

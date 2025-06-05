@@ -3,7 +3,7 @@ import { Box, Button, Flex, Text, useColorModeValue } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { AppState } from "../../store";
-import { openNewPostNotify } from "../../store/UtilSlice";
+import { openNewPostNotify, showToast } from "../../store/UtilSlice";
 import { useEffect } from "react";
 
 const NotificationCreatePost = () => {
@@ -17,6 +17,13 @@ const NotificationCreatePost = () => {
 
   useEffect(() => {
     if (openNotify) {
+      dispatch(
+        showToast({
+          title: "",
+          description: t("toastCreadtedPost"),
+          status: "info",
+        })
+      );
       const timeOut = setTimeout(() => {
         handleCloseToast();
       }, 3000);
@@ -29,6 +36,8 @@ const NotificationCreatePost = () => {
   const handleCloseToast = () => {
     dispatch(openNewPostNotify());
   };
+
+  return <></>;
 
   return (
     <>

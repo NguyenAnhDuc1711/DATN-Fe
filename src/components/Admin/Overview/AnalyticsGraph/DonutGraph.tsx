@@ -22,7 +22,7 @@ const DoughnutGraph = ({
     labels: labels,
     datasets: [
       {
-        label: "My First Dataset",
+        label: "",
         data: data,
         backgroundColor: [
           "rgb(255, 99, 132)",

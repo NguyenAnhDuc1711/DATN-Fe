@@ -25,10 +25,12 @@ const MapGraph = ({
     (state: AppState) => state.admin.overview.dateRange
   );
 
-  const countries: any = ChartGeo.topojson.feature(
+  const countriesInfo: any = ChartGeo.topojson.feature(
     worldAtlasData as any,
     (worldAtlasData as any).objects.countries as any
-  ).features as any;
+  ) as any;
+
+  const countries = countriesInfo.features;
 
   const dataConfig = {
     labels: countries.map((d: any) => d.properties.name),

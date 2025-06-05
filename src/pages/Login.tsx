@@ -63,6 +63,16 @@ const Login = () => {
     }
   }, [countClick, countClickGetFullAcc]);
 
+  useEffect(() => {
+    const enterListener = (e: KeyboardEvent) => {
+      if (e.key === "Enter") {
+        handleLogin();
+      }
+    };
+    window.addEventListener("keydown", enterListener);
+    return () => window.removeEventListener("keydown", enterListener);
+  }, [inputs]);
+
   const handleGetAllAcc = async () => {
     try {
       const data: IUser[] | undefined | null = await GET({
@@ -111,7 +121,7 @@ const Login = () => {
     let payload = inputs;
     if (loginAsAdmin) {
       payload.loginAsAdmin = true;
-      const data = await dispatch(login(payload));
+      await dispatch(login(payload));
       dispatch(
         showToast({
           title: t("success"),

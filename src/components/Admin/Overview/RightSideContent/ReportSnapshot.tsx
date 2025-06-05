@@ -10,6 +10,7 @@ import DoughnutGraph from "../AnalyticsGraph/DonutGraph";
 import LineGraph from "../AnalyticsGraph/LineGraph";
 import MapGraph from "../AnalyticsGraph/MapGraph";
 import DateRangeView from "../utils/DateRange";
+import { sortObjectByValue } from "../utils";
 
 const ReportSnapshot = () => {
   const dateRange = useAppSelector(
@@ -41,9 +42,14 @@ const ReportSnapshot = () => {
           dateRange: searchDateRange,
         },
         (data) => {
-          console.log("data", data);
           setTimeout(() => {
-            setSnapshotData(data);
+            setSnapshotData({
+              active: data.active,
+              event: sortObjectByValue(data.event),
+              locale: sortObjectByValue(data.locale),
+              device: sortObjectByValue(data.device),
+              os: sortObjectByValue(data.os),
+            });
             setIsLoading(false);
           }, 1000);
         }
@@ -54,11 +60,11 @@ const ReportSnapshot = () => {
     }
   };
 
-  const containerBox = (cpns) => {
+  const containerBox = (cpns, fitBox = false) => {
     return (
       <Flex
-        width={"100%"}
-        minWidth={"80vw"}
+        width={fitBox ? "fit-content" : "100%"}
+        minWidth={fitBox ? "fit-content" : "80vw"}
         gap={6}
         border={"1px solid white"}
         p={10}
@@ -73,6 +79,8 @@ const ReportSnapshot = () => {
             style={{
               flex: 1,
               width: "fit-content",
+              overflowY: "auto",
+              overflowX: "hidden",
             }}
           >
             {cpn}
@@ -109,9 +117,9 @@ const ReportSnapshot = () => {
           isLoading={isLoading}
         />,
         <DetailStatisticTable
-          data={snapshotData?.locale}
-          title="Active user in countries"
-          keyHead="Country"
+          data={snapshotData?.event}
+          title="User events"
+          keyHead="Event"
           valHead="Total"
           isLoading={isLoading}
         />,

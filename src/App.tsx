@@ -69,7 +69,7 @@ const UserPage: LazyExoticComponent<() => JSX.Element> = lazy(
 );
 
 const wrapSuspense = (cpn) => {
-  return <Suspense fallback={<div>Loading...</div>}>{cpn}</Suspense>;
+  return <Suspense fallback={<div></div>}>{cpn}</Suspense>;
 };
 
 function App() {

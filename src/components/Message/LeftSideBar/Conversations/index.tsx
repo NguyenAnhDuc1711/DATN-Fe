@@ -1,4 +1,4 @@
-import { Flex } from "@chakra-ui/react";
+import { Flex, useBreakpointValue } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { EmptyContentSvg } from "../../../../assests/icons";
@@ -37,6 +37,7 @@ const Conversations = ({
     currentPageConversation,
   } = useAppSelector((state: AppState) => state.message);
   const [init, setInit] = useState(true);
+  const isMobile = useBreakpointValue({ base: true, md: false });
 
   useEffect(() => {
     if (userInfo._id) {
@@ -87,7 +88,7 @@ const Conversations = ({
             })
           );
           dispatch(updateCurrentPageConversation(page));
-          if (!selectedConversation && !conversationId) {
+          if (!selectedConversation && !conversationId && !isMobile) {
             dispatch(selectConversation(data[0]));
           }
         }

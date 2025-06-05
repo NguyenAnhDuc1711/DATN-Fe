@@ -61,7 +61,7 @@ const ConversationHeader = ({
             }}
           >
             <IoIosArrowBack />
-            <Box
+            {/* <Box
               bg={"red"}
               borderRadius={"50%"}
               fontSize={"sm"}
@@ -76,7 +76,7 @@ const ConversationHeader = ({
               padding={"1px"}
             >
               9
-            </Box>
+            </Box> */}
           </Flex>
         )}
 

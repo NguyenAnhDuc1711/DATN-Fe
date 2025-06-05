@@ -156,6 +156,9 @@ const enTranslations = {
   countLike: "Likes",
   countCmt: "Comments",
   countRepost: "Reposts",
+
+  postDeleted: "This post has been deleted",
+  postPending: "This post is waiting for validation from admin",
 };
 
 export default enTranslations;

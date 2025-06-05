@@ -1,12 +1,13 @@
 import { Box, Skeleton, SkeletonText } from "@chakra-ui/react";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { TiDeleteOutline } from "react-icons/ti";
 import PostConstants from "../../Breads-Shared/Constants/PostConstants";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { AppState } from "../../store";
 import { updatePostInfo } from "../../store/PostSlice";
 import "./index.css";
+import { previewLinkKey } from "../../Breads-Shared/util";
 
 const CustomLinkPreview = ({
   link = null,
@@ -24,7 +25,9 @@ const CustomLinkPreview = ({
   useEffect(() => {
     if (!link) {
       if (url) {
-        fetchLinkData(finalLink);
+        console.log("url: ", url);
+        console.log("finalLink: ", finalLink);
+        fetchLinkData(url);
       } else if (postInfo?.links.length > 0) {
         setData(postInfo.links[0]);
       }
@@ -32,20 +35,53 @@ const CustomLinkPreview = ({
   }, [url, postInfo?.links?.length]);
 
   const fetchLinkData = async (fetchUrl) => {
+    let result = null;
+    const previewLen = previewLinkKey?.length;
+    let index = 1;
     try {
-      const { data } = await axios.get(
-        `https://api.linkpreview.net?key=6e7b8bc11c79257b251760d26dad6645&q=${fetchUrl}`
-      );
-      setData(data);
+      do {
+        let key = previewLinkKey[index - 1];
+        try {
+          const { data } = await axios.get(
+            `https://api.linkpreview.net?key=${key}&q=${fetchUrl}`
+          );
+          if (data) {
+            result = data;
+          }
+        } catch (err) {
+          index += 1;
+          console.error("End of preview link quota: ", err);
+        }
+      } while (index < previewLen && !result);
+    } catch (err) {
+      console.error("getLinkPreview: ", err);
+    }
+
+    if (result) {
+      setData(result);
       dispatch(
         updatePostInfo({
           ...postInfo,
-          links: [...postInfo.links, data],
+          links: [...postInfo.links, result],
         })
       );
-    } catch (err) {
-      console.error(err);
     }
+    // else {
+    //   try {
+    //     const { data } = await axios.get(
+    //       `https://api.linkpreview.net?key=6e7b8bc11c79257b251760d26dad6645&q=${fetchUrl}`
+    //     );
+    //     setData(data);
+    //     dispatch(
+    //       updatePostInfo({
+    //         ...postInfo,
+    //         links: [...postInfo.links, data],
+    //       })
+    //     );
+    //   } catch (err) {
+    //     console.error(err);
+    //   }
+    // }
   };
 
   const handleDeleteLink = () => {
@@ -125,4 +161,4 @@ const CustomLinkPreview = ({
   );
 };
 
-export default CustomLinkPreview;
+export default memo(CustomLinkPreview);
